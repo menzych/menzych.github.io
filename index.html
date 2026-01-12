@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Всем хай, с вами Мензич!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="notification-container">
+        <div id="notification" class="notification">
+            <div class="notif-icon">
+                <img id="notif-img" src="" alt="icon">
+            </div>
+            <div class="notif-content">
+                <h4>Достижение получено!</h4>
+                <p id="notif-text">Текст достижения</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
+        <header>
+            <div class="avatar-wrapper">
+                <img src="assets/img/profile/p.png" alt="Profile" class="profile-img" id="profile-avatar">
+                <div id="pat-hand" class="pat-hand"></div>
+            </div>
+
+            <h1>menzych</h1>
+            <p class="subtitle">В лучшем случае, программист | А в худшем, вайбкодер</p>
+        </header>
+
+        <nav class="links">
+            <a href="#" class="link-item" id="about-btn">Обо мне</a>
+            <a href="#" class="link-item" id="achievements-btn">Достижения</a>
+            <a href="#" class="link-item" id="projects-btn">Проекты</a>
+            <a href="assets/game/snake.html" class="link-item">Змейка</a>
+        </nav>
+
+        <footer class="social-icons">
+            <a href="https://t.me/AltereoLife" target="_blank" class="social-icon" id="trigger-tg" aria-label="Telegram"><i class="icon">T</i></a>
+            <a href="https://steamcommunity.com/profiles/76561199533026112" target="_blank" class="social-icon" id="trigger-steam" aria-label="Steam"><i class="icon">S</i></a>
+            <a href="https://github.com/menzych" target="_blank" class="social-icon" id="gitHub" aria-label="GitHub"><i class="icon">G</i></a>
+        </footer>
+    </div>
+
+    <div class="fullscreen-page" id="about-container">
+        <div class="content-box">
+            <div class="about-text-area">
+                <h2>Обо мне</h2>
+                <div class="typing-container">
+                    <p>Приветствую вас благодарная публика, с вами я Мензич! (ладно хватит клоунады)</p>
+                    <p>Программистом я стал относительно недавно, изначально программировал в Scratch.</p>
+                    <p>Потом перешёл на Python+HTML...</p>
+                    <p>...и сейчас я занимаюсь разработкой своей библиотеки для сюжета Майнкрафт.</p>
+                    <p>Да и сайтики могу поделать</p>
+                    <p>Вообще, я считаю что программистом может быть любой!</p>
+                    <p>(а и ещё я пишу музыку)</p>
+                </div>
+                <button class="back-button" id="back-btn-about">Назад</button>
+            </div>
+            <div class="about-image">
+                <img src="assets/img/ModelsSite/img1.png" alt="menzych">
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-page" id="achievements-page">
+        <div class="content-box achievements-content">
+            <h2 class="ach-title-main">Достижения</h2>
+
+            <div class="ach-list">
+                <div class="ach-item locked" id="ach-1">
+                    <div class="ach-icon">
+                        <img id="img-1" src="assets/img/achievements/locked.png" alt="Locked">
+                    </div>
+                    <div class="ach-text-container">
+                        <div class="ach-name" id="title-1">Заглушка</div>
+                        <div class="ach-desc-text" id="desc-1">заглушка</div>
+                    </div>
+                </div>
+
+                <div class="ach-item locked" id="ach-2">
+                    <div class="ach-icon">
+                        <img id="img-2" src="assets/img/achievements/locked.png" alt="Locked">
+                    </div>
+                    <div class="ach-text-container">
+                        <div class="ach-name" id="title-2">заглушка</div>
+                        <div class="ach-desc-text" id="desc-2">заглушка1</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="back-button" id="back-btn-ach">Назад</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-page" id="projects-page">
+        <div class="content-box projects-content-box">
+            <div class="warning-overlay" id="projects-warning" style="display: none;">
+                <div class="warning-box">
+                    <div class="warning-icon">ℹ️</div>
+                    <div class="warning-title">Перед загрузкой</div>
+                    <div class="warning-text">
+                        Для вашего удобства я создал <b>MInstaller</b> — единый лаунчер для скачивания и обновления моих программ.
+                        <br><br>
+                        ⚠️ <b>Обратите внимание:</b> у программы нет платной цифровой подписи Microsoft. Из-за этого Windows и антивирусы могут ошибочно считать её небезопасной.
+                        <br><br>
+                        Это нормально для всех доступных проектов. <b>Весь исходный код всех МОИХ ПРОЕКТОВ открыт и доступен на <a href="https://github.com/menzych/MInstaller" target="_blank" style="color: var(--accent-purple); text-decoration: underline; cursor: pointer;">GitHub</a></b> для проверки.
+                    </div>
+                    <div class="warning-checkbox-wrapper">
+                        <input type="checkbox" id="warning-agree-check">
+                        <label for="warning-agree-check">Я понимаю причину предупреждений и доверяю источнику (или проверил код на GitHub)</label>
+                    </div>
+                    <button id="warning-confirm-btn" class="warning-btn">Перейти к проектам</button>
+                </div>
+            </div>
+
+            <div class="installer-section">
+                <div class="installer-icon">
+                    <img src="assets/img/achievements/locked.png" alt="MInstaller">
+                </div>
+                <div class="installer-info">
+                    <h3>MInstaller</h3>
+                    <p>Единый лаунчер для всех моих программ. Удобная установка и авто-обновления.</p>
+                </div>
+                <a href="#download_installer_url" class="installer-btn">Скачать MInstaller</a>
+            </div>
+
+            <div class="projects-scroll-area">
+
+                <div class="projects-section-title">Доступно в MInstaller</div>
+                <div class="projects-grid" id="released-projects-grid">
+                </div>
+
+                <div class="projects-section-title" style="color: var(--dev-accent); border-color: rgba(255, 174, 0, 0.3);">В разработке</div>
+                <div class="projects-grid" id="dev-projects-grid">
+                </div>
+
+            </div>
+
+            <button class="back-button" id="back-btn-projects">Назад</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
