@@ -155,17 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const patHand = document.getElementById('pat-hand');
 
     const patSounds = [
-        'assets/sounds/patpat/pat.ogg',
-        'assets/sounds/patpat/pat1.ogg',
-        'assets/sounds/patpat/pat2.ogg'
+        new Audio('assets/sounds/patpat/pat.ogg'),
+        new Audio('assets/sounds/patpat/pat1.ogg'),
+        new Audio('assets/sounds/patpat/pat2.ogg')
     ];
 
     if (avatar && patHand) {
         avatar.addEventListener('click', () => {
             const randomSound = patSounds[Math.floor(Math.random() * patSounds.length)];
-            const audio = new Audio(randomSound);
-            audio.volume = 0.5;
-            audio.play().catch(e => console.log('Audio error:', e));
+            randomSound.volume = 0.5;
+            randomSound.play().catch(e => console.log('Audio error:', e));
 
             patHand.classList.remove('animate');
             void patHand.offsetWidth;
@@ -177,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         });
     }
-
+    
     mainContainer.style.opacity = '0';
     mainContainer.style.transform = 'translateY(20px)';
     setTimeout(() => {
