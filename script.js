@@ -1,13 +1,16 @@
-let targetDate = new Date();
-targetDate.setMonth(targetDate.getMonth() + 1);
+const targetDate = new Date("2026-02-17T12:00:00");
 
 function updateTimers() {
     const now = new Date();
-
     const diff = targetDate - now;
 
     if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<div style="font-size: 1.2rem; color: var(--accent-color); letter-spacing: 2px; text-transform: uppercase;">Мы вернулись. Обновите страницу.</div>';
+        document.getElementById('countdown').innerHTML = '<div style="font-size: 1.2rem; color: var(--accent-color); letter-spacing: 2px; text-transform: uppercase;">Мы вернулись! Обновите страницу.</div>';
+        
+        document.getElementById('days').textContent = "00";
+        document.getElementById('hours').textContent = "00";
+        document.getElementById('minutes').textContent = "00";
+        document.getElementById('seconds').textContent = "00";
     } else {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -27,8 +30,11 @@ function updateTimers() {
         day: 'numeric', month: 'long', year: 'numeric'
     });
 
-    document.getElementById('clock-realtime').textContent = timeString;
-    document.getElementById('date').textContent = dateString;
+    const clockEl = document.getElementById('clock-realtime');
+    const dateEl = document.getElementById('date');
+    
+    if (clockEl) clockEl.textContent = timeString;
+    if (dateEl) dateEl.textContent = dateString;
 }
 
 setInterval(updateTimers, 1000);
