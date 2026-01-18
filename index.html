@@ -3,23 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ой, ей! Обновление...</title>
+    <title>bio | menzych</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-    <div class="container">
-        <h1>Идёт обновление!<span class="cursor"></span></h1>
-        <div class="subtitle">Обновление сайта...</div>
-        
-        <div class="divider"></div>
-
-        <div class="footer-info">
-            <span id="date">Загрузка даты...</span> &nbsp;|&nbsp; <span id="clock-realtime">--:--:--</span>
-        </div>
+<body class="h-screen flex items-center justify-center relative selection:bg-white selection:text-black">
+    <canvas id="star-canvas" class="fixed inset-0 z-0"></canvas>
+    <div class="noise"></div>
+    <div id="enter-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer">
+        <p class="text-xs text-zinc-500 mb-4 animate-pulse tracking-widest">[ click anywhere ]</p>
+        <h1 class="text-3xl font-bold tracking-[0.3em] uppercase text-white hover:scale-105 transition-transform duration-500">
+            войти
+        </h1>
     </div>
+    <main id="main-content" class="relative z-10 w-full max-w-[420px] p-4 hidden">
+        <div class="glass-card rounded-2xl p-8 text-center fade-in relative overflow-hidden group min-h-[500px] flex flex-col justify-center">
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-500 to-transparent opacity-30"></div>
 
+            <div id="home-view" class="view-transition active-view w-full">
+                <div class="relative mx-auto w-32 h-32 mb-6 group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute -inset-2 rounded-full border border-dashed border-zinc-600/30 animate-[spin_12s_linear_infinite]"></div>
+                    <img src="assets/img/profile.png" alt="Profile" class="w-full h-full rounded-full object-cover border border-zinc-800 bg-black grayscale contrast-125 relative z-10" onerror="this.src='https://api.dicebear.com/9.x/notionists/svg?seed=Shadow&backgroundColor=050505&glassesProbability=80'">
+                    <div class="absolute bottom-1 right-1 z-20 w-4 h-4 bg-black rounded-full flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold mb-2 tracking-tighter flex items-center justify-center gap-2 text-white shadow-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                    menzych
+                    <i class="fas fa-certificate text-[10px] text-zinc-500 align-top" title="Verified"></i>
+                </h1>
+                <div class="h-6 mb-6 text-xs text-zinc-400 font-mono tracking-wide uppercase">
+                    <span id="typewriter"></span><span class="cursor-blink">_</span>
+                </div>
+
+                <div class="flex gap-3 justify-center mb-8 w-full px-2">
+                    <button onclick="switchView('about')" class="custom-btn px-4 py-2.5 rounded text-[11px] text-zinc-400 font-bold uppercase tracking-widest flex-1 hover:text-white">
+                        обо мне
+                    </button>
+                    <a href="assets/buttons/programms.html" class="custom-btn px-4 py-2.5 rounded text-[11px] text-zinc-400 font-bold uppercase tracking-widest flex-1 hover:text-white text-center flex items-center justify-center">
+                        программы
+                    </a>
+                </div>
+
+                <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent mb-8"></div>
+
+                <div class="flex justify-center gap-8 mb-8">
+                    <a href="https://t.me/AltereoLife" target="_blank" class="social-icon text-2xl text-zinc-500">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                    <a href="https://github.com/menzych" target="_blank" class="social-icon text-2xl text-zinc-500">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://steamcommunity.com/profiles/76561199533026112/" target="_blank" class="social-icon text-2xl text-zinc-500">
+                        <i class="fab fa-steam"></i>
+                    </a>
+                </div>
+                <div class="bg-black/40 border border-zinc-800/50 rounded-xl p-3 flex items-center gap-3 hover:border-zinc-700 transition-colors duration-300 group/music cursor-default">
+                    <div class="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
+                        <i class="fas fa-music text-zinc-600 text-xs group-hover/music:text-white transition-colors"></i>
+                    </div>
+                    <div class="text-left flex-1 overflow-hidden">
+                        <p class="text-xs font-bold text-zinc-200 truncate">Music</p>
+                        <p class="text-[10px] text-zinc-500 truncate">Playing...</p>
+                    </div>
+                    <div class="flex gap-[3px] items-end h-3 mr-1 opacity-50 group-hover/music:opacity-100 transition-opacity">
+                        <div class="w-[2px] bg-white h-full animate-[bounce_1s_infinite]"></div>
+                        <div class="w-[2px] bg-white h-2/3 animate-[bounce_1.2s_infinite]"></div>
+                        <div class="w-[2px] bg-white h-1/2 animate-[bounce_0.8s_infinite]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="about-view" class="view-transition hidden-view w-full flex flex-col items-center justify-center h-full p-4">
+                <h2 class="text-2xl font-bold mb-6 text-white tracking-widest uppercase border-b border-zinc-800 pb-2">Инфо</h2>
+                <div class="text-left space-y-4 text-xs text-zinc-400 font-light leading-relaxed w-full px-2">
+                    <p>
+                        <span class="text-white font-bold">User:</span> menzych<br>
+                        <span class="text-white font-bold">Specialization:</span> psycho-unbalanced<br>
+                        <span class="text-white font-bold">Role:</span> gear of power
+                    </p>
+                    <p class="border-l-2 border-zinc-800 pl-3 italic">
+                        "Just writing code."
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div class="bg-zinc-900/50 p-2 rounded border border-zinc-800 text-center">Python</div>
+                        <div class="bg-zinc-900/50 p-2 rounded border border-zinc-800 text-center">HTML</div>
+                        <div class="bg-zinc-900/50 p-2 rounded border border-zinc-800 text-center">C++</div>
+                        <div class="bg-zinc-900/50 p-2 rounded border border-zinc-800 text-center">Design</div>
+                    </div>
+                </div>
+                <button onclick="switchView('home')" class="mt-8 text-xs text-zinc-500 hover:text-white transition-colors flex items-center gap-2 group">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                    НАЗАД
+                </button>
+            </div>
+        </div>
+    </main>
     <script src="script.js"></script>
-
 </body>
 </html>
