@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+    <link rel="shortcut icon" href="favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="favicon/site.webmanifest" />
+    <title>MenZo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #000000;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .liquid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(90px);
+            z-index: -1;
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            top: -20%;
+            left: -20%;
+            width: 60vw;
+            height: 60vw;
+            background: rgba(255, 255, 255, 0.08);
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            bottom: -20%;
+            right: -20%;
+            width: 60vw;
+            height: 60vw;
+            background: rgba(255, 255, 255, 0.05);
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            top: 40%;
+            left: 40%;
+            width: 40vw;
+            height: 40vw;
+            background: rgba(255, 255, 255, 0.03);
+            animation-duration: 20s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        .glass-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-menzo {
+            position: relative;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .btn-menzo:hover {
+            background: #e0e0e0;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-menzo:active {
+            transform: scale(0.98);
+        }
+
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div id="app" class="w-full max-w-md relative z-10">
+        
+        <div id="redirect-screen" class="hidden text-center fade-in">
+            <div class="glass-card w-24 h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center relative bg-black/50">
+                <div class="absolute inset-0 rounded-2xl border border-white/30 animate-pulse"></div>
+                <i class="fa-solid fa-arrow-right text-4xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-2 text-white">Переход<span class="loading-dots"></span></h2>
+            <p class="text-gray-400 font-light tracking-widest uppercase text-xs">Переход на сайт с помощью Menzo!</p>
+        </div>
+
+        <div id="main-screen" class="glass-card rounded-none p-8 hidden fade-in border-t-2 border-white">
+            
+            <div class="text-center mb-10">
+                <h1 class="text-5xl font-bold mb-2 text-white tracking-tighter uppercase">MenZo</h1>
+                <div class="h-0.5 w-12 bg-white mx-auto mb-4 opacity-50"></div>
+                <p class="text-gray-400 text-xs font-mono tracking-widest uppercase">Сокращатель ссылок лучше Яндекса</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="relative group">
+                    <input type="text" id="url-input" placeholder="Вставьте ссылку..." 
+                        class="glass-input w-full rounded-none px-5 py-4 pl-12 outline-none font-mono text-sm">
+                    <i class="fa-solid fa-link absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors duration-300"></i>
+                </div>
+                
+                <button id="shorten-btn" class="btn-menzo w-full font-bold py-4 rounded-none flex items-center justify-center gap-3 uppercase tracking-wider text-sm">
+                    <span>Сократить</span>
+                    <i class="fa-solid fa-bolt"></i>
+                </button>
+            </div>
+
+            <div id="result-area" class="mt-8 pt-6 border-t border-white/10 hidden">
+                <label class="block text-[10px] text-gray-500 mb-2 uppercase tracking-widest font-bold">Generated Link</label>
+                <div class="flex items-center bg-black/50 border border-white/20 hover:border-white transition-all duration-300">
+                    <input type="text" id="short-url" readonly 
+                        class="bg-transparent px-5 py-4 w-full text-white text-sm focus:outline-none font-mono tracking-wide">
+                    <button id="copy-btn" class="px-6 h-full text-gray-400 hover:text-black hover:bg-white transition-all border-l border-white/10">
+                        <i class="fa-regular fa-copy text-lg"></i>
+                    </button>
+                </div>
+                <p id="status-msg" class="text-xs mt-3 text-center h-5 transition-all font-mono text-gray-400"></p>
+            </div>
+        </div>
+
+        <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center z-50">
+            <div class="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+            <div class="mt-6 text-white text-xs font-bold tracking-[0.3em] uppercase">Загрузка...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyAJM98aDlQpjvH8fkBO5i3Dn8MfQIaJcU8",
+            authDomain: "menzo-1ce8c.firebaseapp.com",
+            projectId: "menzo-1ce8c",
+            storageBucket: "menzo-1ce8c.firebasestorage.app",
+            messagingSenderId: "280457094914",
+            appId: "1:280457094914:web:d481c3485cf05e9b88441b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const ui = {
+            loader: document.getElementById('loader'),
+            mainScreen: document.getElementById('main-screen'),
+            redirectScreen: document.getElementById('redirect-screen'),
+            urlInput: document.getElementById('url-input'),
+            shortenBtn: document.getElementById('shorten-btn'),
+            resultArea: document.getElementById('result-area'),
+            shortUrl: document.getElementById('short-url'),
+            copyBtn: document.getElementById('copy-btn'),
+            statusMsg: document.getElementById('status-msg')
+        };
+
+        function generateId(length = 6) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        async function createShortLink() {
+            let originalUrl = ui.urlInput.value.trim();
+            if (!originalUrl) {
+                ui.urlInput.focus();
+                ui.urlInput.parentElement.classList.add('animate-[bounce_0.5s]');
+                setTimeout(() => ui.urlInput.parentElement.classList.remove('animate-[bounce_0.5s]'), 500);
+                return;
+            }
+
+            if (!/^https?:\/\//i.test(originalUrl)) {
+                originalUrl = 'https://' + originalUrl;
+            }
+
+            ui.shortenBtn.disabled = true;
+            ui.shortenBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+            try {
+                const shortId = generateId();
+                const user = auth.currentUser;
+                
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'links', shortId), {
+                    url: originalUrl,
+                    created_by: user ? user.uid : 'anon',
+                    created_at: new Date().toISOString()
+                });
+
+                const baseUrl = window.location.origin + window.location.pathname;
+                const finalLink = `${baseUrl}?id=${shortId}`;
+                
+                ui.shortUrl.value = finalLink;
+                ui.resultArea.classList.remove('hidden');
+                ui.resultArea.classList.add('fade-in');
+                ui.statusMsg.textContent = '';
+            } catch (error) {
+                console.error("Error:", error);
+                ui.statusMsg.textContent = "Ошибка сохранения";
+                ui.statusMsg.className = 'text-xs mt-3 text-center h-5 transition-all font-mono text-red-500';
+            } finally {
+                ui.shortenBtn.disabled = false;
+                ui.shortenBtn.innerHTML = '<span>Сократить</span> <i class="fa-solid fa-bolt"></i>';
+            }
+        }
+
+        async function handleRedirect(shortId) {
+            ui.redirectScreen.classList.remove('hidden');
+            ui.loader.classList.add('hidden');
+            
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'links', shortId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setTimeout(() => {
+                        window.location.href = data.url;
+                    }, 800);
+                } else {
+                    alert('Ссылка не найдена');
+                    ui.redirectScreen.classList.add('hidden');
+                    ui.mainScreen.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert('Ошибка загрузки ссылки');
+                ui.redirectScreen.classList.add('hidden');
+                ui.mainScreen.classList.remove('hidden');
+            }
+        }
+
+        function copyToClipboard() {
+            ui.shortUrl.select();
+            document.execCommand('copy');
+            ui.statusMsg.textContent = '[ COPIED ]';
+            ui.statusMsg.className = 'text-xs mt-3 text-center h-5 transition-all font-mono text-white tracking-widest';
+            setTimeout(() => {
+                ui.statusMsg.textContent = '';
+            }, 2000);
+        }
+
+        async function init() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const params = new URLSearchParams(window.location.search);
+                    const shortId = params.get('id');
+                    if (shortId) {
+                        handleRedirect(shortId);
+                    } else {
+                        ui.loader.classList.add('hidden');
+                        ui.mainScreen.classList.remove('hidden');
+                    }
+                }
+            });
+
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                     await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                     await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.error("Auth failed:", e);
+                const loaderText = document.querySelector('#loader div:last-child');
+                if(loaderText) {
+                    loaderText.textContent = "ACCESS DENIED";
+                    loaderText.classList.add('text-red-500');
+                }
+            }
+        }
+
+        ui.shortenBtn.addEventListener('click', createShortLink);
+        ui.copyBtn.addEventListener('click', copyToClipboard);
+        ui.urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createShortLink();
+        });
+
+        init();
+    </script>
+</body>
+</html>
