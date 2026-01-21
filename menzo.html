@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
-    <link rel="shortcut icon" href="favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="favicon/site.webmanifest" />
+    <link rel="icon" type="image/png" href="menzo-icon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="menzo-icon/favicon.svg" />
+    <link rel="shortcut icon" href="menzo-icon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="menzo-icon/apple-touch-icon.png" />
+    <link rel="manifest" href="menzo-icon/site.webmanifest" />
     <title>MenZo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -257,8 +257,11 @@
                     created_at: new Date().toISOString()
                 });
 
-                const baseUrl = window.location.origin + window.location.pathname;
-                const finalLink = `${baseUrl}?id=${shortId}`;
+                let url = window.location.href.split(/[?#]/)[0]; 
+                url = url.replace(/\/index\.html$/, '/'); 
+                if (!url.endsWith('/')) url += '/'; 
+
+                const finalLink = url + '#' + shortId;
                 
                 ui.shortUrl.value = finalLink;
                 ui.resultArea.classList.remove('hidden');
@@ -313,10 +316,10 @@
         async function init() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    const params = new URLSearchParams(window.location.search);
-                    const shortId = params.get('id');
-                    if (shortId) {
-                        handleRedirect(shortId);
+                    const hash = window.location.hash.substring(1);
+                    
+                    if (hash) {
+                        handleRedirect(hash);
                     } else {
                         ui.loader.classList.add('hidden');
                         ui.mainScreen.classList.remove('hidden');
