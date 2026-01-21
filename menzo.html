@@ -257,11 +257,15 @@
                     created_at: new Date().toISOString()
                 });
 
-                let url = window.location.href.split(/[?#]/)[0]; 
-                url = url.replace(/\/index\.html$/, '/'); 
-                if (!url.endsWith('/')) url += '/'; 
+                let url = window.location.href.split(/[?#]/)[0];
+                url = url.replace(/\/index\.html$/, '');
+                
+                if (url.endsWith('/')) {
+                    url = url.slice(0, -1);
+                }
 
-                const finalLink = url + '#' + shortId;
+                const separator = url.endsWith('.html') ? '' : '/';
+                const finalLink = url + separator + '#' + shortId;
                 
                 ui.shortUrl.value = finalLink;
                 ui.resultArea.classList.remove('hidden');
