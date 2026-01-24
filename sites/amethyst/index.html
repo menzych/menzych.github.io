@@ -179,7 +179,6 @@
         </div>
     </div>
 
-    <!-- Gateway Payment Screen -->
     <div id="gateway-screen" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#f0f2f5] dark:bg-[#0b1120]">
         <div class="glass-card w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl relative z-20">
             <div id="gateway-content">
@@ -566,14 +565,14 @@
                     </div>
             
                     <div class="space-y-4">
-                         <div class="flex justify-center items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                            <button onclick="adjustSlotBet(-10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">-</button>
-                            <div class="text-center w-24">
-                                <span class="text-xs text-slate-500 uppercase font-bold">Ставка</span>
-                                <div class="font-mono font-bold text-slate-900 dark:text-white" id="slot-bet-display">50</div>
-                            </div>
-                            <button onclick="adjustSlotBet(10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">+</button>
-                        </div>
+                        <div class="flex justify-center items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                             <button onclick="adjustSlotBet(-10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">-</button>
+                             <div class="flex-1">
+                                  <span class="text-xs text-slate-500 uppercase font-bold block text-center mb-1">Ставка</span>
+                                  <input type="number" id="slot-bet-input" value="50" min="10" class="w-full bg-transparent text-center font-mono font-bold text-slate-900 dark:text-white outline-none border-none p-0 appearance-none m-0" onchange="validateSlotBet()">
+                             </div>
+                             <button onclick="adjustSlotBet(10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">+</button>
+                         </div>
             
                         <button onclick="spinSlots()" id="btn-spin" class="neo-btn w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-600/30 transition transform active:scale-95">
                             КРУТИТЬ
@@ -911,6 +910,9 @@
                         prefix: initialPrefix,
                         transactions: [{amount: 100, desc: 'Бонус', type: 'bonus', date: new Date().toLocaleDateString()}]
                     });
+                    
+                    localStorage.setItem('amethyst_username', u);
+                    
                     showToast('Аккаунт создан', 'success');
                     toggleAuth('login');
                     document.getElementById('login-username').value = u;
@@ -953,6 +955,7 @@
 
                     if (userData.password === p) {
                         _u = snap.id; 
+                        localStorage.setItem('amethyst_username', u);
                         startListener();
                     } else {
                         showToast('Неверные данные', 'error');
@@ -1450,6 +1453,11 @@
         
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
+            const savedUser = localStorage.getItem('amethyst_username');
+            if(savedUser) {
+                _u = 'users_' + savedUser;
+                startListener();
+            }
         });
         
         initAuth();
@@ -1463,7 +1471,7 @@
         function fmt(n) { return Math.abs(n).toLocaleString(); }
         function getIcon(t) { return ({work:'fa-briefcase',transfer:'fa-paper-plane',loan:'fa-university',bonus:'fa-gift',payment:'fa-receipt'})[t]||'fa-wallet'; }
         
-        window.logout = () => { _u=null; _d=null; _p=null; document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); localStorage.removeItem('amethyst_last_page'); };
+        window.logout = () => { _u=null; _d=null; _p=null; document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); localStorage.removeItem('amethyst_last_page'); localStorage.removeItem('amethyst_username'); };
         window.showPage = (id) => {
             document.querySelectorAll('.page-section').forEach(e=>e.classList.add('hidden'));
             document.getElementById('page-'+id).classList.remove('hidden');
@@ -1676,20 +1684,35 @@
         }
         
         window.adjustSlotBet = (val) => {
-            currentSlotBet += val;
-            if (currentSlotBet < 10) currentSlotBet = 10;
-            document.getElementById('slot-bet-display').innerText = currentSlotBet;
+            const input = document.getElementById('slot-bet-input');
+            let current = parseInt(input.value) || 0;
+            current += val;
+            if(current < 10) current = 10;
+            input.value = current;
+            validateSlotBet();
+        }
+
+        window.validateSlotBet = () => {
+             const input = document.getElementById('slot-bet-input');
+             let val = parseInt(input.value);
+             if(isNaN(val) || val < 10) val = 10;
+             input.value = val;
+             currentSlotBet = val;
         }
 
         window.spinSlots = async () => {
              if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
-             if (_d.balance < currentSlotBet) return showToast('Недостаточно средств', 'error');
+             const input = document.getElementById('slot-bet-input');
+             const bet = parseInt(input.value);
+             
+             if (bet < 10) return showToast('Минимальная ставка 10', 'error');
+             if (_d.balance < bet) return showToast('Недостаточно средств', 'error');
 
              const btn = document.getElementById('btn-spin');
              btn.disabled = true;
 
              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
-                balance: _d.balance - currentSlotBet
+                balance: _d.balance - bet
              });
              
              const reels = [document.getElementById('reel-1'), document.getElementById('reel-2'), document.getElementById('reel-3')];
@@ -1717,13 +1740,13 @@
                     reels[1].innerText = results[1];
                     reels[2].innerText = results[2];
                     
-                    checkSlotWin(results);
+                    checkSlotWin(results, bet);
                     btn.disabled = false;
                 }
              }, 100);
         }
 
-        async function checkSlotWin(results) {
+        async function checkSlotWin(results, bet) {
             let multiplier = 0;
             if (results[0] === results[1] && results[1] === results[2]) {
                 if (results[0] === '7️⃣') multiplier = 50;
@@ -1734,7 +1757,7 @@
             }
             
             if (multiplier > 0) {
-                const win = currentSlotBet * multiplier;
+                const win = bet * multiplier;
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
                     balance: _d.balance + win,
                     transactions: arrayUnion({amount: win, desc: `Слоты (x${multiplier})`, type: 'bonus', date: new Date().toLocaleString()})
