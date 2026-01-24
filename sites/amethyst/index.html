@@ -37,6 +37,7 @@
                         'fade-in': 'fadeIn 0.3s ease-out',
                         'pulse-slow': 'pulse 3s infinite',
                         'bounce-in': 'bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                        'spin-slow': 'spin 3s linear infinite', 
                     },
                     keyframes: {
                         slideUp: {
@@ -95,6 +96,9 @@
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(5px) grayscale(80%);
             -webkit-backdrop-filter: blur(5px) grayscale(80%);
+        }
+        .slot-reel {
+            transition: transform 0.1s linear;
         }
     </style>
 </head>
@@ -175,6 +179,7 @@
         </div>
     </div>
 
+    <!-- Gateway Payment Screen -->
     <div id="gateway-screen" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#f0f2f5] dark:bg-[#0b1120]">
         <div class="glass-card w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl relative z-20">
             <div id="gateway-content">
@@ -258,6 +263,11 @@
                 <button onclick="showPage('earn')" id="nav-earn" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
                     <i class="fas fa-briefcase text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
                     <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Биржа</span>
+                </button>
+                
+                <button onclick="showPage('casino')" id="nav-casino" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
+                    <i class="fas fa-dice text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Казино</span>
                 </button>
 
                 <button onclick="showPage('credit')" id="nav-credit" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
@@ -485,11 +495,14 @@
                 <div id="job-mining" class="hidden animate-fade-in">
                     <div class="bg-white dark:bg-dark-surface rounded-[2.5rem] p-10 text-center border border-slate-100 dark:border-slate-800 shadow-xl max-w-md mx-auto relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                        
                         <div id="mining-rock" class="w-40 h-40 mx-auto bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 rounded-[2.5rem] flex items-center justify-center text-5xl cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-150 select-none shadow-lg mb-8 mining-rock-anim border-4 border-white dark:border-slate-600" onclick="mineClick()">
                             <i class="fas fa-gem text-blue-500"></i>
                         </div>
+                        
                         <h3 class="font-bold text-xl dark:text-white mb-2">Добыча блоков</h3>
                         <p class="text-slate-500 text-sm mb-6">Кликайте по камню, чтобы добыть ресурсы</p>
+                        
                         <div class="w-full bg-slate-100 dark:bg-slate-900 h-6 rounded-full overflow-hidden mb-2 relative">
                             <div id="mining-progress" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full w-0 transition-all duration-100 ease-out"></div>
                         </div>
@@ -509,6 +522,7 @@
                                 <i class="fas fa-search"></i> Найти заказ
                             </button>
                         </div>
+                        
                         <div id="freelance-state-working" class="hidden">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
@@ -517,9 +531,11 @@
                                 </div>
                                 <span class="text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-100 dark:border-emerald-900/50">+20-100 <i class="fas fa-gem"></i></span>
                             </div>
+                            
                             <div class="bg-slate-900 rounded-xl p-5 mb-6 h-40 overflow-y-auto font-mono text-xs text-green-400 border border-slate-800 shadow-inner" id="freelance-log">
                                 <div class="opacity-50">> System initialized...</div>
                             </div>
+                            
                             <div class="space-y-2">
                                 <div class="flex justify-between text-xs font-bold text-slate-500">
                                     <span>ПРОГРЕСС</span>
@@ -529,6 +545,47 @@
                                     <div id="freelance-progress" class="bg-emerald-500 h-full w-0 transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-casino" class="page-section hidden animate-slide-up max-w-4xl mx-auto">
+                <header class="text-center mb-10">
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Казино</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Испытай удачу в слотах</p>
+                </header>
+            
+                <div class="glass-card rounded-[2.5rem] p-8 max-w-md mx-auto relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"></div>
+            
+                    <div class="flex justify-center gap-4 mb-8">
+                        <div id="reel-1" class="w-20 h-24 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center text-4xl border-2 border-slate-200 dark:border-slate-700 shadow-inner slot-reel">🍒</div>
+                        <div id="reel-2" class="w-20 h-24 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center text-4xl border-2 border-slate-200 dark:border-slate-700 shadow-inner slot-reel">🍋</div>
+                        <div id="reel-3" class="w-20 h-24 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center text-4xl border-2 border-slate-200 dark:border-slate-700 shadow-inner slot-reel">🍇</div>
+                    </div>
+            
+                    <div class="space-y-4">
+                         <div class="flex justify-center items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                            <button onclick="adjustSlotBet(-10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">-</button>
+                            <div class="text-center w-24">
+                                <span class="text-xs text-slate-500 uppercase font-bold">Ставка</span>
+                                <div class="font-mono font-bold text-slate-900 dark:text-white" id="slot-bet-display">50</div>
+                            </div>
+                            <button onclick="adjustSlotBet(10)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 transition font-bold text-slate-600 dark:text-white">+</button>
+                        </div>
+            
+                        <button onclick="spinSlots()" id="btn-spin" class="neo-btn w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-600/30 transition transform active:scale-95">
+                            КРУТИТЬ
+                        </button>
+                    </div>
+                    
+                     <div class="mt-6 text-center">
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-2">Таблица выплат</p>
+                        <div class="text-xs text-slate-500 space-x-2">
+                            <span>7️⃣7️⃣7️⃣ x50</span>
+                            <span>💎💎💎 x20</span>
+                            <span>🍒🍒🍒 x5</span>
                         </div>
                     </div>
                 </div>
@@ -789,6 +846,7 @@
         let isPaymentProcessing = false;
         let currentInterval = null;
         let currentTimeout = null;
+        let currentSlotBet = 50;
 
         const initTheme = () => {
             const t = localStorage.getItem('amethyst_theme');
@@ -939,7 +997,10 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('gateway-screen').classList.add('hidden');
-            showPage('home');
+            
+            const lastPage = localStorage.getItem('amethyst_last_page') || 'home';
+            showPage(lastPage);
+            
             updateUI();
         }
 
@@ -1159,7 +1220,7 @@
                         msg = `Пользователь ${target} забанен`;
                         break;
                     case 'unban':
-                        updates = { banned: false }; // or deleteField()
+                        updates = { banned: false }; 
                         msg = `Пользователь ${target} разбанен`;
                         break;
                     case 'freeze':
@@ -1198,12 +1259,10 @@
                 if(newSnap.exists()) return showToast('Новый ник уже занят', 'error');
 
                 const userData = oldSnap.data();
-                userData.username = newNick; // Update username field
+                userData.username = newNick; 
 
-                // Create new doc
                 await setDoc(newRef, userData);
                 
-                // Delete old doc
                 await deleteDoc(oldRef);
 
                 showToast(`Ник сменен: ${oldNick} -> ${newNick}`, 'success');
@@ -1212,7 +1271,6 @@
 
 
         window.adminSetPrefix = async () => {
-            // FIX: Allow if prefix is DEVELOPER OR username is menzych (case-insensitive)
             const isDev = _d.prefix === 'DEVELOPER' || (_d.username && _d.username.toLowerCase() === 'menzych');
             if(!isDev) return;
 
@@ -1341,7 +1399,6 @@
                     transactions: arrayUnion({amount: -_p.a, desc: `Покупка: ${_p.i} (ID: ${txId})`, type: 'payment', date: date})
                 });
 
-                // Show Receipt
                 document.getElementById('gateway-content').classList.add('hidden');
                 document.getElementById('gateway-receipt').classList.remove('hidden');
                 
@@ -1372,7 +1429,6 @@
             }
             if(cancelBtn) cancelBtn.disabled = false;
             
-            // NEW: Clear URL parameters to prevent re-triggering gateway on refresh
             window.history.replaceState({}, document.title, window.location.pathname);
 
             initApp();
@@ -1380,7 +1436,6 @@
 
         window.cancelGatewayPayment = () => { 
             _p = null; 
-            // NEW: Clear URL parameters
             window.history.replaceState({}, document.title, window.location.pathname);
             initApp(); 
         }
@@ -1408,7 +1463,7 @@
         function fmt(n) { return Math.abs(n).toLocaleString(); }
         function getIcon(t) { return ({work:'fa-briefcase',transfer:'fa-paper-plane',loan:'fa-university',bonus:'fa-gift',payment:'fa-receipt'})[t]||'fa-wallet'; }
         
-        window.logout = () => { _u=null; _d=null; _p=null; document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); };
+        window.logout = () => { _u=null; _d=null; _p=null; document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); localStorage.removeItem('amethyst_last_page'); };
         window.showPage = (id) => {
             document.querySelectorAll('.page-section').forEach(e=>e.classList.add('hidden'));
             document.getElementById('page-'+id).classList.remove('hidden');
@@ -1423,6 +1478,8 @@
                 activeBtn.classList.remove('text-slate-400');
                 activeBtn.classList.add('text-brand-600','bg-white','dark:bg-brand-900/20','dark:text-brand-400', 'shadow-md');
             }
+            
+            localStorage.setItem('amethyst_last_page', id);
         };
         window.toggleAuth = (m) => {
             document.getElementById('login-form').classList.toggle('hidden', m==='register');
@@ -1464,13 +1521,11 @@
         }
 
         window.showJobsMenu = () => {
-             // Clear any active timers
              if(currentInterval) clearInterval(currentInterval);
              if(currentTimeout) clearTimeout(currentTimeout);
              currentInterval = null;
              currentTimeout = null;
 
-             // Reset Video Job State
              isEditing = false;
              const videoContent = document.getElementById('video-content');
              videoContent.classList.add('hidden');
@@ -1481,7 +1536,6 @@
              document.getElementById('tool-cut').disabled = true;
              document.getElementById('tool-fx').disabled = true;
 
-             // Reset Freelance Job State
              document.getElementById('freelance-state-working').classList.add('hidden');
              document.getElementById('freelance-state-idle').classList.remove('hidden');
              const freelanceBtn = document.querySelector('#freelance-state-idle button');
@@ -1493,7 +1547,6 @@
              document.getElementById('freelance-percent').innerText = '0%';
              document.getElementById('freelance-log').innerHTML = '<div class="opacity-50">> System initialized...</div>';
             
-             // Reset Mining State
              miningProgress = 0;
              const miningBar = document.getElementById('mining-progress');
              if(miningBar) miningBar.style.width = '0%';
@@ -1620,6 +1673,74 @@
                     }, 1000);
                 }
             }, 800);
+        }
+        
+        window.adjustSlotBet = (val) => {
+            currentSlotBet += val;
+            if (currentSlotBet < 10) currentSlotBet = 10;
+            document.getElementById('slot-bet-display').innerText = currentSlotBet;
+        }
+
+        window.spinSlots = async () => {
+             if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+             if (_d.balance < currentSlotBet) return showToast('Недостаточно средств', 'error');
+
+             const btn = document.getElementById('btn-spin');
+             btn.disabled = true;
+
+             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                balance: _d.balance - currentSlotBet
+             });
+             
+             const reels = [document.getElementById('reel-1'), document.getElementById('reel-2'), document.getElementById('reel-3')];
+             const symbols = ['🍒', '🍋', '🍇', '💎', '7️⃣'];
+             let results = [];
+             
+             let spinCount = 0;
+             const spinInterval = setInterval(() => {
+                reels.forEach(r => {
+                    r.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                    r.style.transform = `translateY(${Math.random() * 10 - 5}px)`;
+                });
+                spinCount++;
+                if (spinCount > 20) {
+                    clearInterval(spinInterval);
+                    reels.forEach(r => r.style.transform = 'translateY(0)');
+                    
+                    results = [
+                        symbols[Math.floor(Math.random() * symbols.length)],
+                        symbols[Math.floor(Math.random() * symbols.length)],
+                        symbols[Math.floor(Math.random() * symbols.length)]
+                    ];
+                    
+                    reels[0].innerText = results[0];
+                    reels[1].innerText = results[1];
+                    reels[2].innerText = results[2];
+                    
+                    checkSlotWin(results);
+                    btn.disabled = false;
+                }
+             }, 100);
+        }
+
+        async function checkSlotWin(results) {
+            let multiplier = 0;
+            if (results[0] === results[1] && results[1] === results[2]) {
+                if (results[0] === '7️⃣') multiplier = 50;
+                else if (results[0] === '💎') multiplier = 20;
+                else multiplier = 5;
+            } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+                 multiplier = 2;
+            }
+            
+            if (multiplier > 0) {
+                const win = currentSlotBet * multiplier;
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance + win,
+                    transactions: arrayUnion({amount: win, desc: `Слоты (x${multiplier})`, type: 'bonus', date: new Date().toLocaleString()})
+                });
+                showToast(`Победа! +${win} 💎`, 'success');
+            }
         }
 
     </script>
