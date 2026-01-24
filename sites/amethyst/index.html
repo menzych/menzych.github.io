@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amethyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            surface: '#1e293b',
+                            border: '#334155'
+                        }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'bounce-in': 'bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0)' },
+                            '50%': { transform: 'scale(1.1)' },
+                            '100%': { transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .dark .glass-card {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(30,41,59,0.4) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        .neo-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .neo-btn:active { transform: scale(0.97); }
+        .mining-rock-anim:active { transform: scale(0.9) rotate(5deg); }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        #frozen-overlay {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px) grayscale(80%);
+            -webkit-backdrop-filter: blur(5px) grayscale(80%);
+        }
+    </style>
+</head>
+<body class="bg-[#f0f2f5] text-slate-800 dark:bg-[#0b1120] dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-500 overflow-hidden">
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[60] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div id="frozen-overlay" class="hidden fixed inset-0 z-[70] flex flex-col items-center justify-center text-center p-8 select-none">
+        <div class="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 animate-pulse">
+            <i class="fas fa-snowflake text-6xl text-blue-500"></i>
+        </div>
+        <h2 class="text-4xl font-black text-blue-600 dark:text-blue-400 mb-2 drop-shadow-lg">ЗАМОРОЖЕН</h2>
+        <p class="text-slate-600 dark:text-slate-300 font-bold bg-white/50 dark:bg-black/50 px-4 py-2 rounded-xl">Действия временно ограничены администратором</p>
+    </div>
+
+    <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#f0f2f5] dark:bg-[#0b1120] transition-colors duration-500">
+        <div class="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-purple-500/20 blur-[120px] rounded-full pointer-events-none animate-pulse-slow"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-blue-500/20 blur-[120px] rounded-full pointer-events-none animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+
+        <div class="glass-card w-full max-w-md p-8 rounded-[2rem] relative z-10 animate-slide-up">
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-gradient-to-tr from-brand-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-brand-500/20 transform rotate-3 hover:rotate-6 transition duration-300">
+                    <i class="fas fa-gem text-white text-3xl"></i>
+                </div>
+                <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Amethyst</h1>
+                <p class="text-slate-500 dark:text-slate-400 font-medium">Финансовая экосистема</p>
+                <div id="auth-loading" class="mt-4 text-xs text-brand-500 font-bold hidden flex justify-center items-center gap-2">
+                    <i class="fas fa-circle-notch fa-spin"></i> Подключение...
+                </div>
+                
+                <div id="gateway-badge" class="hidden mt-6 inline-flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 px-4 py-2 rounded-full text-xs font-bold border border-yellow-200 dark:border-yellow-700/50">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Оплата покупки</span>
+                </div>
+            </div>
+
+            <div id="login-form" class="space-y-6">
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
+                        <input type="text" id="login-username" class="w-full pl-12 pr-4 py-4 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition font-medium placeholder-slate-400" placeholder="Ваш логин">
+                    </div>
+                    <div class="relative group">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
+                        <input type="password" id="login-password" class="w-full pl-12 pr-4 py-4 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition font-medium placeholder-slate-400" placeholder="Ваш пароль">
+                    </div>
+                </div>
+                
+                <button onclick="handleLogin()" id="btn-login" class="neo-btn w-full bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2 group">
+                    <span>Войти в систему</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                
+                <p class="text-center text-sm text-slate-500 dark:text-slate-400">
+                    Нет аккаунта? <a href="#" onclick="toggleAuth('register')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Создать</a>
+                </p>
+            </div>
+
+            <div id="register-form" class="hidden space-y-6">
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <i class="fas fa-user-plus absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
+                        <input type="text" id="reg-username" class="w-full pl-12 pr-4 py-4 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 outline-none transition font-medium placeholder-slate-400" placeholder="Придумайте логин">
+                    </div>
+                    <div class="relative group">
+                        <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
+                        <input type="password" id="reg-password" class="w-full pl-12 pr-4 py-4 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-brand-500 outline-none transition font-medium placeholder-slate-400" placeholder="Придумайте пароль">
+                    </div>
+                </div>
+
+                <button onclick="handleRegister()" id="btn-register" class="neo-btn w-full bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-brand-500/30">
+                    Зарегистрироваться
+                </button>
+                
+                <p class="text-center text-sm text-slate-500 dark:text-slate-400">
+                    Уже есть аккаунт? <a href="#" onclick="toggleAuth('login')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">Войти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="gateway-screen" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#f0f2f5] dark:bg-[#0b1120]">
+        <div class="glass-card w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl relative z-20">
+            <div id="gateway-content">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl shadow-lg shadow-brand-600/30">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold dark:text-white">Подтверждение</h2>
+                    <p class="text-slate-500 text-sm">Оплата через Amethyst Pay</p>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-100 dark:border-slate-700">
+                    <div class="flex justify-between mb-3">
+                        <span class="text-slate-500 text-sm">Продавец</span>
+                        <span id="gw-merchant" class="font-bold dark:text-white">Store</span>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <span class="text-slate-500 text-sm">Товар</span>
+                        <span id="gw-item" class="font-bold dark:text-white">Item</span>
+                    </div>
+                    <div class="h-px bg-slate-200 dark:bg-slate-700 my-4"></div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 text-sm font-bold">К оплате</span>
+                        <div class="flex items-center gap-2 text-slate-900 dark:text-white">
+                            <i class="fas fa-gem text-brand-600"></i>
+                            <span id="gw-amount" class="text-3xl font-black">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="cancelGatewayPayment()" id="btn-pay-cancel" class="neo-btn flex-1 py-4 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Отмена</button>
+                    <button onclick="confirmGatewayPayment()" id="btn-pay-confirm" class="neo-btn flex-1 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-lg shadow-brand-600/30 transition">Оплатить</button>
+                </div>
+            </div>
+
+            <div id="gateway-receipt" class="hidden text-center animate-fade-in">
+                <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/30 animate-bounce-in">
+                    <i class="fas fa-check text-white text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-black dark:text-white mb-2">Оплата успешна!</h2>
+                <p class="text-slate-500 text-sm mb-6">Средства переведены продавцу</p>
+
+                <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 text-left space-y-3 mb-8 border border-slate-200 dark:border-slate-700">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">ID транзакции</span>
+                        <span id="rcpt-id" class="font-mono font-bold dark:text-white">...</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Дата</span>
+                        <span id="rcpt-date" class="dark:text-white">...</span>
+                    </div>
+                    <div class="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-bold">Сумма</span>
+                        <span id="rcpt-amount" class="text-xl font-black text-brand-600">0</span>
+                    </div>
+                </div>
+
+                <button onclick="closeGateway()" class="neo-btn w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-xl font-bold shadow-lg">Закрыть чек</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden min-h-screen flex flex-col md:flex-row pb-[90px] md:pb-0">
+        
+        <nav class="glass border-t md:border-t-0 md:border-r border-slate-200 dark:border-slate-800 fixed bottom-0 md:relative md:h-screen w-full md:w-24 lg:w-72 z-40 flex md:flex-col justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none transition-colors duration-300 backdrop-blur-md bg-white/80 dark:bg-dark-surface/80">
+            <div class="hidden md:flex items-center gap-3 p-8 text-brand-600 dark:text-brand-400">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-600/20">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <span class="font-extrabold text-xl lg:block hidden tracking-tight text-slate-800 dark:text-white">Amethyst</span>
+            </div>
+
+            <div class="flex md:flex-col justify-evenly w-full md:px-4 md:gap-2">
+                <button onclick="showPage('home')" id="nav-home" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
+                    <i class="fas fa-wallet text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Главная</span>
+                </button>
+
+                <button onclick="showPage('earn')" id="nav-earn" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
+                    <i class="fas fa-briefcase text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Биржа</span>
+                </button>
+
+                <button onclick="showPage('credit')" id="nav-credit" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
+                    <i class="fas fa-chart-pie text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Кредит</span>
+                </button>
+
+                <button onclick="showPage('profile')" id="nav-profile" class="nav-btn group flex flex-col md:flex-row items-center md:gap-4 p-2 md:px-4 md:py-3.5 rounded-2xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition-all flex-1 md:flex-none">
+                    <i class="fas fa-user-circle text-2xl md:text-xl mb-1 md:mb-0 transition-transform group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-sm font-semibold lg:block md:hidden block">Профиль</span>
+                </button>
+            </div>
+
+            <div class="hidden md:block p-6">
+                <button onclick="logout()" class="flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition w-full font-medium text-sm">
+                    <i class="fas fa-sign-out-alt"></i> <span class="lg:block hidden">Выйти</span>
+                </button>
+            </div>
+        </nav>
+
+        <main class="flex-grow p-4 md:p-10 overflow-y-auto overflow-x-hidden relative h-screen">
+            
+            <div class="flex justify-between items-center mb-8 md:hidden">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-600/20">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <span class="font-bold text-xl dark:text-white">Amethyst</span>
+                </div>
+                <button onclick="showPage('profile')" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-white dark:border-slate-600 shadow-md">
+                    <img src="https://ui-avatars.com/api/?background=7c3aed&color=fff&name=User" id="header-avatar" class="w-full h-full object-cover">
+                </button>
+            </div>
+
+            <div id="page-home" class="page-section animate-slide-up max-w-5xl mx-auto">
+                <header class="mb-10">
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Общий баланс</p>
+                    <div class="flex items-center gap-3">
+                        <div class="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight flex items-baseline gap-2">
+                            <i class="fas fa-gem text-brand-600 text-4xl align-top transform -translate-y-2"></i>
+                            <span id="display-balance">0</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
+                    <div class="lg:col-span-7 relative h-64 rounded-[2.5rem] p-8 text-white shadow-2xl overflow-hidden group cursor-pointer transition-transform hover:scale-[1.01] duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#4f46e5] via-[#7c3aed] to-[#db2777]"></div>
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/20 blur-3xl rounded-full"></div>
+                        
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-start">
+                                <i class="fas fa-wifi text-3xl opacity-70 rotate-90"></i>
+                                <span class="font-bold tracking-widest opacity-80">AMETHYST BANK</span>
+                            </div>
+                            
+                            <div>
+                                <div class="flex items-center gap-3 mb-6 opacity-90">
+                                    <div class="w-12 h-8 bg-yellow-400/80 rounded-md"></div>
+                                    <span class="text-xs font-mono tracking-wider">VIRTUAL</span>
+                                </div>
+                                <p class="text-3xl font-mono tracking-widest drop-shadow-md" id="card-number-display">**** **** **** 0000</p>
+                            </div>
+
+                            <div class="flex justify-between items-end text-sm font-medium opacity-90">
+                                <div>
+                                    <div class="text-[10px] opacity-70 uppercase tracking-wider mb-1">Card Holder</div>
+                                    <div id="card-holder-name" class="uppercase tracking-wide font-bold">USER</div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] opacity-70 uppercase tracking-wider mb-1">Expires</div>
+                                    <div class="font-mono">12/99</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                        <button onclick="showPage('earn')" class="bg-white dark:bg-dark-surface p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col items-center justify-center gap-3 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition group text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 dark:text-white">Пополнить</h3>
+                                <p class="text-[10px] text-slate-400">Заработать аметисты</p>
+                            </div>
+                        </button>
+                        
+                        <div class="bg-white dark:bg-dark-surface p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-20 h-20 bg-red-500/5 rounded-bl-[2rem]"></div>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-1">Кредит</p>
+                            <div class="flex items-center gap-1.5 mb-3">
+                                <i class="fas fa-chart-pie text-red-500"></i>
+                                <h3 id="display-debt" class="text-2xl font-black text-slate-800 dark:text-white">0</h3>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="debt-bar" class="bg-red-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-2 bg-white dark:bg-dark-surface p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 shadow-sm flex items-center gap-3">
+                            <div class="flex-1 relative">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="transfer-input" placeholder="Никнейм для перевода" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-500 transition outline-none">
+                            </div>
+                            <div class="w-24 relative">
+                                <input type="number" id="transfer-amount" placeholder="0" class="w-full pl-3 pr-8 py-3 bg-slate-50 dark:bg-slate-900/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-500 transition outline-none text-center font-mono font-bold">
+                                <i class="fas fa-gem absolute right-4 top-1/2 -translate-y-1/2 text-brand-500 text-xs"></i>
+                            </div>
+                            <button onclick="handleTransfer()" class="w-12 h-11 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-lg">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-end mb-6">
+                        <h3 class="font-bold text-xl text-slate-800 dark:text-white">Транзакции</h3>
+                        <button class="text-xs font-bold text-brand-600 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-lg hover:bg-brand-100 transition">Показать все</button>
+                    </div>
+                    <div class="bg-white dark:bg-dark-surface rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 p-2">
+                        <ul id="transaction-list" class="divide-y divide-slate-50 dark:divide-slate-700/50">
+                            <li class="p-8 text-center text-slate-400 text-sm">Загрузка истории...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-earn" class="page-section hidden animate-slide-up max-w-4xl mx-auto">
+                <header class="text-center mb-10">
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Биржа Труда</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Выберите способ заработка аметистов</p>
+                </header>
+
+                <div id="earn-menu" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button onclick="openJob('video')" class="group relative bg-white dark:bg-dark-surface p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-purple-500/30 transition-all duration-300 text-left overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-clapperboard"></i>
+                        </div>
+                        <h3 class="font-bold text-xl dark:text-white mb-1">Монтаж</h3>
+                        <p class="text-sm text-slate-500 mb-6">Создание контента.</p>
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-purple-700 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-300 px-3 py-1.5 rounded-lg">
+                            <i class="fas fa-coins"></i> 50 / заказ
+                        </div>
+                    </button>
+
+                    <button onclick="openJob('mining')" class="group relative bg-white dark:bg-dark-surface p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-blue-500/30 transition-all duration-300 text-left overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <h3 class="font-bold text-xl dark:text-white mb-1">Майнинг</h3>
+                        <p class="text-sm text-slate-500 mb-6">Добыча аметистов.</p>
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 px-3 py-1.5 rounded-lg">
+                            <i class="fas fa-coins"></i> 10 / блок
+                        </div>
+                    </button>
+
+                    <button onclick="openJob('freelance')" class="group relative bg-white dark:bg-dark-surface p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-emerald-500/30 transition-all duration-300 text-left overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="font-bold text-xl dark:text-white mb-1">Фриланс</h3>
+                        <p class="text-sm text-slate-500 mb-6">Выполнение задач.</p>
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-300 px-3 py-1.5 rounded-lg">
+                            <i class="fas fa-coins"></i> 20-100
+                        </div>
+                    </button>
+                </div>
+
+                <button id="back-to-jobs" onclick="showJobsMenu()" class="hidden mb-6 text-slate-500 hover:text-brand-600 font-bold text-sm flex items-center gap-2 transition px-4">
+                    <i class="fas fa-arrow-left"></i> Назад к выбору
+                </button>
+
+                <div id="job-video" class="hidden animate-fade-in">
+                    <div class="glass-card rounded-[2rem] overflow-hidden max-w-2xl mx-auto border-0">
+                        <div class="aspect-video bg-black relative flex items-center justify-center overflow-hidden">
+                            <div id="video-placeholder" class="text-slate-600 flex flex-col items-center">
+                                <i class="fas fa-film text-5xl mb-3 opacity-50"></i>
+                                <span class="text-xs uppercase tracking-[0.2em] font-mono">Standby Mode</span>
+                            </div>
+                            <div id="video-content" class="absolute inset-0 bg-cover bg-center hidden opacity-0 transition-opacity duration-500" style="background-image: url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-8">
+                                    <div class="w-full">
+                                        <div class="h-1.5 bg-gray-700 rounded-full w-full mb-3 overflow-hidden">
+                                            <div id="render-bar" class="h-full bg-red-500 w-0 transition-all duration-300 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs text-white/80 font-mono">
+                                            <span class="flex items-center gap-2"><div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div> REC</span>
+                                            <span id="video-time">00:00:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 p-6 flex justify-between items-center border-b border-slate-800">
+                            <div class="flex gap-3">
+                                <button id="tool-cut" onclick="editorAction('cut')" disabled class="w-12 h-12 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <i class="fas fa-cut"></i>
+                                </button>
+                                <button id="tool-fx" onclick="editorAction('fx')" disabled class="w-12 h-12 rounded-xl bg-slate-800 text-slate-400 hover:text-purple-400 hover:bg-slate-700 transition flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                            </div>
+                            <button id="action-btn" onclick="startEditingProject()" class="neo-btn bg-brand-600 hover:bg-brand-500 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-brand-600/20">
+                                Новый проект
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-950 p-6">
+                            <div class="flex justify-between text-[10px] text-slate-500 mb-3 font-mono uppercase tracking-wider">
+                                <span>Timeline Track A</span>
+                                <span id="project-status">Ожидание...</span>
+                            </div>
+                            <div class="h-20 bg-slate-900 rounded-xl border border-slate-800 timeline-track relative flex items-center px-3 gap-2 overflow-hidden shadow-inner" id="timeline-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="job-mining" class="hidden animate-fade-in">
+                    <div class="bg-white dark:bg-dark-surface rounded-[2.5rem] p-10 text-center border border-slate-100 dark:border-slate-800 shadow-xl max-w-md mx-auto relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                        <div id="mining-rock" class="w-40 h-40 mx-auto bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 rounded-[2.5rem] flex items-center justify-center text-5xl cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-150 select-none shadow-lg mb-8 mining-rock-anim border-4 border-white dark:border-slate-600" onclick="mineClick()">
+                            <i class="fas fa-gem text-blue-500"></i>
+                        </div>
+                        <h3 class="font-bold text-xl dark:text-white mb-2">Добыча блоков</h3>
+                        <p class="text-slate-500 text-sm mb-6">Кликайте по камню, чтобы добыть ресурсы</p>
+                        <div class="w-full bg-slate-100 dark:bg-slate-900 h-6 rounded-full overflow-hidden mb-2 relative">
+                            <div id="mining-progress" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full w-0 transition-all duration-100 ease-out"></div>
+                        </div>
+                        <p class="text-xs font-mono text-slate-400 font-bold" id="mining-stats">0/100</p>
+                    </div>
+                </div>
+
+                <div id="job-freelance" class="hidden animate-fade-in">
+                    <div class="bg-white dark:bg-dark-surface rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-800 shadow-xl max-w-lg mx-auto">
+                        <div id="freelance-state-idle" class="text-center py-10">
+                            <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-500 text-3xl animate-pulse">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3 class="font-bold text-2xl dark:text-white mb-2">Поиск заказов</h3>
+                            <p class="text-slate-500 text-sm mb-8">Нажмите кнопку, чтобы найти доступную работу в сети.</p>
+                            <button onclick="startFreelanceSearch()" class="neo-btn w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+                                <i class="fas fa-search"></i> Найти заказ
+                            </button>
+                        </div>
+                        <div id="freelance-state-working" class="hidden">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h3 class="font-bold text-lg dark:text-white">Разработка ПО</h3>
+                                    <p class="text-xs text-slate-500 flex items-center gap-1"><i class="fas fa-building"></i> TechCorp Inc.</p>
+                                </div>
+                                <span class="text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-100 dark:border-emerald-900/50">+20-100 <i class="fas fa-gem"></i></span>
+                            </div>
+                            <div class="bg-slate-900 rounded-xl p-5 mb-6 h-40 overflow-y-auto font-mono text-xs text-green-400 border border-slate-800 shadow-inner" id="freelance-log">
+                                <div class="opacity-50">> System initialized...</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-bold text-slate-500">
+                                    <span>ПРОГРЕСС</span>
+                                    <span id="freelance-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+                                    <div id="freelance-progress" class="bg-emerald-500 h-full w-0 transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-credit" class="page-section hidden animate-slide-up max-w-5xl mx-auto">
+                <header class="mb-8 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl flex items-center justify-center text-xl shadow-lg">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Кредитный Отдел</h2>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Управление долгами</p>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-3 bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-800 dark:to-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                        <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+                            <div>
+                                <p class="text-slate-400 text-xs font-bold uppercase mb-1">Ваш Долг</p>
+                                <h3 class="text-3xl font-black text-red-400 flex items-baseline gap-1">
+                                    <i class="fas fa-gem text-lg"></i> <span id="credit-debt-display-main">0</span>
+                                </h3>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-xs font-bold uppercase mb-1">Лимит</p>
+                                <h3 class="text-3xl font-black text-white flex items-baseline gap-1">
+                                    <i class="fas fa-gem text-lg"></i> <span id="credit-limit-display">5000</span>
+                                </h3>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-xs font-bold uppercase mb-1">Ставка</p>
+                                <h3 class="text-3xl font-black text-brand-400">5%</h3>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-xs font-bold uppercase mb-1">Статус</p>
+                                <span class="inline-block px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold" id="credit-status-badge">Активен</span>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                                <span>ИСПОЛЬЗОВАНИЕ ЛИМИТА</span>
+                                <span id="limit-percent">0%</span>
+                            </div>
+                            <div class="w-full bg-white/10 h-3 rounded-full overflow-hidden backdrop-blur-sm">
+                                <div id="limit-bar" class="bg-gradient-to-r from-brand-500 to-purple-500 h-full w-0 transition-all duration-1000 shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-dark-surface p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-lg flex flex-col justify-between h-full">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 flex items-center justify-center text-xl mb-4">
+                                <i class="fas fa-hand-holding-dollar"></i>
+                            </div>
+                            <h3 class="font-bold text-xl dark:text-white mb-2">Взять кредит</h3>
+                            <p class="text-sm text-slate-500 mb-6">Мгновенное получение средств на счет.</p>
+                            <div class="relative mb-4">
+                                <input type="number" id="loan-amount" class="w-full pl-4 pr-12 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-lg outline-none focus:border-emerald-500 transition" placeholder="Сумма">
+                                <i class="fas fa-gem absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            </div>
+                        </div>
+                        <button onclick="takeLoan()" class="neo-btn w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-4 rounded-xl shadow-lg hover:opacity-90">
+                            Получить средства
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white dark:bg-dark-surface p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-lg flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <div class="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 flex items-center justify-center text-xl mb-4">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </div>
+                                    <h3 class="font-bold text-xl dark:text-white">Погашение долга</h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-slate-500 font-bold uppercase">Текущий долг</p>
+                                    <p class="text-2xl font-black text-red-500" id="repay-debt-display">0</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3 mb-6">
+                                <div class="relative flex-1">
+                                    <input type="number" id="repay-amount" class="w-full pl-4 pr-12 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-lg outline-none focus:border-red-500 transition" placeholder="Сумма погашения">
+                                    <i class="fas fa-gem absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                </div>
+                                <button onclick="setRepayAmount('all')" class="px-6 py-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/40 transition">
+                                    Всё
+                                </button>
+                            </div>
+                        </div>
+                        <button onclick="repayLoan()" class="neo-btn w-full bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-600/30 hover:bg-red-700">
+                            Оплатить задолженность
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-profile" class="page-section hidden animate-slide-up max-w-3xl mx-auto pb-20">
+                <div class="bg-white dark:bg-dark-surface rounded-[2.5rem] p-8 shadow-xl border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-brand-50 to-transparent dark:from-brand-900/20"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-32 h-32 rounded-full p-1.5 bg-white dark:bg-dark-surface mx-auto mb-4 shadow-xl">
+                            <img src="https://ui-avatars.com/api/?background=7c3aed&color=fff&name=User" id="profile-avatar" class="w-full h-full rounded-full object-cover border-4 border-slate-50 dark:border-slate-800">
+                        </div>
+                        
+                        <h2 id="profile-username" class="text-3xl font-black text-slate-900 dark:text-white mb-2">Username</h2>
+                        
+                        <div class="flex justify-center gap-2 mb-6">
+                            <span id="profile-badge" class="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-full border border-slate-200 dark:border-slate-700">USER</span>
+                        </div>
+
+                        <button id="buy-premium-btn" onclick="buyPremium()" class="mx-auto flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold shadow-lg hover:scale-105 transition mb-8">
+                            <i class="fas fa-crown"></i> Купить Premium (1000 <i class="fas fa-gem"></i>)
+                        </button>
+
+                        <div class="grid gap-4 text-left">
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between group cursor-pointer hover:border-brand-500/30 transition" onclick="copyCardNum()">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Номер Карты</p>
+                                        <p id="profile-card-num" class="font-mono font-bold text-slate-700 dark:text-slate-200">**** **** **** ****</p>
+                                    </div>
+                                </div>
+                                <i class="far fa-copy text-slate-400 group-hover:text-brand-500 transition"></i>
+                            </div>
+
+                            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="toggleTheme()">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm">
+                                        <i class="fas fa-moon"></i>
+                                    </div>
+                                    <span class="font-bold text-slate-700 dark:text-slate-200">Тёмная тема</span>
+                                </div>
+                                <div class="w-12 h-6 bg-slate-300 dark:bg-brand-600 rounded-full relative transition-colors">
+                                    <div class="absolute top-1 left-1 dark:left-7 w-4 h-4 bg-white rounded-full transition-all shadow-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="dev-tools" class="mt-8 bg-slate-900 dark:bg-black rounded-2xl p-6 text-left border border-slate-800 hidden relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                            
+                            <h4 class="text-xs font-black uppercase text-red-500 mb-6 flex items-center gap-2 tracking-widest relative z-10">
+                                <i class="fas fa-terminal"></i> Admin Console
+                            </h4>
+                            
+                            <div class="space-y-6 relative z-10">
+                                <div>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Финансы</p>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input type="text" id="dev-target-user" placeholder="Никнейм" class="col-span-2 p-3 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none focus:border-brand-500">
+                                        <input type="number" id="dev-amount" placeholder="Сумма" class="col-span-2 p-3 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none focus:border-brand-500">
+                                        <button onclick="adminManageMoney('give')" class="bg-emerald-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-emerald-500 transition">Выдать</button>
+                                        <button onclick="adminManageMoney('take')" class="bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-500 transition">Забрать</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Управление пользователями</p>
+                                    <div class="space-y-2 mb-4">
+                                        <input type="text" id="dev-user-manage-input" placeholder="Никнейм цели" class="w-full p-3 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none focus:border-brand-500">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button onclick="adminUserAction('ban')" class="bg-red-700 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-600 transition">Бан ⛔</button>
+                                            <button onclick="adminUserAction('unban')" class="bg-green-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-green-500 transition">Разбан ✅</button>
+                                            <button onclick="adminUserAction('freeze')" class="bg-blue-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-blue-500 transition">Freeze ❄️</button>
+                                            <button onclick="adminUserAction('unfreeze')" class="bg-orange-500 text-white py-2 rounded-lg text-xs font-bold hover:bg-orange-400 transition">Unfreeze 🔥</button>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <input type="text" id="dev-new-nick" placeholder="Новый ник" class="flex-1 p-3 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none focus:border-brand-500">
+                                            <button onclick="adminChangeNick()" class="bg-purple-600 text-white px-4 rounded-lg text-xs font-bold hover:bg-purple-500 transition">Сменить</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Роли</p>
+                                    <div class="flex gap-2">
+                                        <select id="dev-prefix-select" class="flex-1 p-3 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none">
+                                            <option value="USER" class="text-black">USER</option>
+                                            <option value="VIP" class="text-black">VIP</option>
+                                            <option value="PREMIUM" class="text-black">PREMIUM</option>
+                                            <option value="MODERATOR" class="text-black">MODERATOR</option>
+                                            <option value="TESTER" class="text-black">TESTER</option>
+                                            <option value="DEVELOPER" class="text-black">DEVELOPER</option>
+                                        </select>
+                                        <button onclick="adminSetPrefix()" class="bg-blue-600 text-white px-4 rounded-lg text-xs font-bold hover:bg-blue-500 transition">Set</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Tools</p>
+                                    <button onclick="generatePayLink()" class="w-full bg-white/5 text-slate-300 py-2 rounded-lg text-xs font-bold hover:bg-white/10 mb-2 border border-white/10">Pay Link Generator</button>
+                                    
+                                    <div class="flex gap-2 mb-2">
+                                        <input type="text" id="verify-tx-id" placeholder="TXN-ID" class="flex-1 p-2 text-xs bg-white/5 border border-white/10 rounded-lg text-white outline-none">
+                                        <button onclick="checkTransactionUI()" class="bg-purple-600 text-white px-3 rounded-lg text-xs font-bold">Check</button>
+                                    </div>
+                                    <div id="verify-result" class="text-[10px] font-mono p-2 bg-black/50 rounded text-slate-300 hidden"></div>
+                                </div>
+
+                                <div class="pt-4 border-t border-white/10">
+                                    <button id="btn-wipe" onclick="wipeDatabase()" class="w-full bg-red-900/50 text-red-400 py-3 rounded-xl text-xs font-bold border border-red-500/30 hover:bg-red-900 hover:text-white transition">
+                                        <i class="fas fa-skull"></i> WIPE DATABASE
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="logout()" class="w-full mt-6 py-4 rounded-2xl bg-red-50 dark:bg-red-900/10 text-red-600 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/30 transition">
+                            Выйти из аккаунта
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, collection, getDocs, deleteDoc, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let firebaseConfig;
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                throw new Error('Local run detected');
+            }
+        } catch (e) {
+            firebaseConfig = {
+                apiKey: "AIzaSyB8qvschIH7VpXLNtGaJWDhIVNRoUkc6lw",
+                authDomain: "amethyst-e7784.firebaseapp.com",
+                projectId: "amethyst-e7784",
+                storageBucket: "amethyst-e7784.firebasestorage.app",
+                messagingSenderId: "756970984322",
+                appId: "1:756970984322:web:804ec247aedda496b8b59b"
+            };
+        }
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let _u = null; 
+        let _d = null; 
+        let _p = null;
+        let currentUser = null;
+        let isPaymentProcessing = false;
+        let currentInterval = null;
+        let currentTimeout = null;
+
+        const initTheme = () => {
+            const t = localStorage.getItem('amethyst_theme');
+            if(t==='dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        };
+
+        window.toggleTheme = () => {
+            const h = document.documentElement;
+            h.classList.toggle('dark');
+            localStorage.setItem('amethyst_theme', h.classList.contains('dark') ? 'dark' : 'light');
+        };
+
+        const ensureAuth = async () => {
+            if (auth.currentUser) return auth.currentUser;
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                return auth.currentUser;
+            } catch (e) {
+                console.error("Auth error:", e);
+                showToast("Ошибка подключения к серверу", "error");
+                return null;
+            }
+        };
+
+        window.handleRegister = async () => {
+            document.getElementById('btn-register').disabled = true;
+            document.getElementById('auth-loading').classList.remove('hidden');
+            
+            const u = document.getElementById('reg-username').value.trim();
+            const p = document.getElementById('reg-password').value.trim();
+            
+            if(!u || p.length < 6) {
+                document.getElementById('btn-register').disabled = false;
+                document.getElementById('auth-loading').classList.add('hidden');
+                return showToast('Ошибка данных (мин. 6 симв)', 'error');
+            }
+
+            const user = await ensureAuth();
+            if (!user) {
+                document.getElementById('btn-register').disabled = false;
+                document.getElementById('auth-loading').classList.add('hidden');
+                return;
+            }
+
+            try {
+                const ref = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + u);
+                const snap = await getDoc(ref);
+                if(snap.exists()) {
+                    showToast('Логин занят', 'error');
+                } else {
+                    let initialPrefix = 'USER';
+                    if(u.toLowerCase() === 'menzych') initialPrefix = 'DEVELOPER';
+
+                    await setDoc(ref, {
+                        username: u, password: p, balance: 100, debt: 0,
+                        cardNumber: generateCardNumber(), premium: false,
+                        prefix: initialPrefix,
+                        transactions: [{amount: 100, desc: 'Бонус', type: 'bonus', date: new Date().toLocaleDateString()}]
+                    });
+                    showToast('Аккаунт создан', 'success');
+                    toggleAuth('login');
+                    document.getElementById('login-username').value = u;
+                }
+            } catch(e) { 
+                console.error(e); 
+                showToast('Ошибка сети: ' + e.message, 'error'); 
+            } finally {
+                document.getElementById('btn-register').disabled = false;
+                document.getElementById('auth-loading').classList.add('hidden');
+            }
+        }
+
+        window.handleLogin = async () => {
+            document.getElementById('btn-login').disabled = true;
+            document.getElementById('auth-loading').classList.remove('hidden');
+            
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            
+            const user = await ensureAuth();
+            if (!user) {
+                document.getElementById('btn-login').disabled = false;
+                document.getElementById('auth-loading').classList.add('hidden');
+                return;
+            }
+
+            try {
+                const ref = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + u);
+                const snap = await getDoc(ref);
+                
+                if(snap.exists()) {
+                    const userData = snap.data();
+                    if (userData.banned) {
+                         showToast('ВАШ АККАУНТ ЗАБАНЕН', 'error');
+                         document.getElementById('btn-login').disabled = false;
+                         document.getElementById('auth-loading').classList.add('hidden');
+                         return;
+                    }
+
+                    if (userData.password === p) {
+                        _u = snap.id; 
+                        startListener();
+                    } else {
+                        showToast('Неверные данные', 'error');
+                    }
+                } else showToast('Неверные данные', 'error');
+            } catch(e) { 
+                console.error(e); 
+                showToast('Ошибка входа', 'error'); 
+            } finally {
+                document.getElementById('btn-login').disabled = false;
+                document.getElementById('auth-loading').classList.add('hidden');
+            }
+        }
+
+        function startListener() {
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), (doc) => {
+                _d = doc.data();
+                if (!_d) return;
+
+                if (_d.banned) {
+                    alert("Вы были забанены администратором.");
+                    logout();
+                    return;
+                }
+
+                const freezeOverlay = document.getElementById('frozen-overlay');
+                if (_d.frozen) {
+                    freezeOverlay.classList.remove('hidden');
+                } else {
+                    freezeOverlay.classList.add('hidden');
+                }
+
+                if(_p) initGatewayScreen();
+                else initApp();
+            }, (error) => {
+                console.error("Listener error", error);
+                showToast("Потеряно соединение", "error");
+            });
+        }
+
+        function initApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            document.getElementById('gateway-screen').classList.add('hidden');
+            showPage('home');
+            updateUI();
+        }
+
+        function updateUI() {
+            if(!_d) return;
+            
+            const balance = Math.floor(_d.balance || 0);
+            const debt = Math.floor(_d.debt || 0);
+            const limit = 5000 + balance * 0.1;
+
+            document.querySelectorAll('#display-balance').forEach(el => el.innerText = fmt(balance));
+            
+            const debtMain = document.getElementById('credit-debt-display-main');
+            if(debtMain) debtMain.innerText = fmt(debt);
+            
+            const repayDebt = document.getElementById('repay-debt-display');
+            if(repayDebt) repayDebt.innerText = fmt(debt);
+
+            const displayDebt = document.getElementById('display-debt');
+            if(displayDebt) displayDebt.innerText = fmt(debt);
+
+            const limitDisplay = document.getElementById('credit-limit-display');
+            if(limitDisplay) limitDisplay.innerText = fmt(limit);
+
+            const debtPercent = Math.min((debt / limit) * 100, 100);
+            
+            const debtBar = document.getElementById('debt-bar');
+            if(debtBar) debtBar.style.width = debtPercent + '%';
+            
+            const limitBar = document.getElementById('limit-bar');
+            if(limitBar) limitBar.style.width = debtPercent + '%';
+            
+            const limitPercent = document.getElementById('limit-percent');
+            if(limitPercent) limitPercent.innerText = debtPercent.toFixed(1) + '%';
+            
+            const badgeEl = document.getElementById('credit-status-badge');
+            if(badgeEl) {
+                if(debtPercent > 80) { badgeEl.innerText = "Критический"; badgeEl.className = "inline-block px-3 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold"; }
+                else if(debtPercent > 0) { badgeEl.innerText = "Есть долг"; badgeEl.className = "inline-block px-3 py-1 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold"; }
+                else { badgeEl.innerText = "Свободен"; badgeEl.className = "inline-block px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold"; }
+            }
+
+            const cardNumDisplay = document.getElementById('card-number-display');
+            if(cardNumDisplay) cardNumDisplay.innerText = _d.cardNumber;
+            
+            const profileCardNum = document.getElementById('profile-card-num');
+            if(profileCardNum) profileCardNum.innerText = _d.cardNumber;
+            
+            const cardHolder = document.getElementById('card-holder-name');
+            if(cardHolder) cardHolder.innerText = _d.username;
+            
+            const profileUsername = document.getElementById('profile-username');
+            if(profileUsername) profileUsername.innerText = _d.username;
+            
+            const headerAvatar = document.getElementById('header-avatar');
+            if(headerAvatar) headerAvatar.src = `https://ui-avatars.com/api/?background=7c3aed&color=fff&name=${_d.username}`;
+            
+            const profileAvatar = document.getElementById('profile-avatar');
+            if(profileAvatar) profileAvatar.src = `https://ui-avatars.com/api/?background=7c3aed&color=fff&name=${_d.username}`;
+
+            const badge = document.getElementById('profile-badge');
+            const buyBtn = document.getElementById('buy-premium-btn');
+            const devTools = document.getElementById('dev-tools');
+            
+            if(_d.username && _d.username.toLowerCase() === 'menzych' && _d.prefix !== 'DEVELOPER') {
+                 updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), { prefix: 'DEVELOPER' });
+            }
+            
+            let displayPrefix = _d.prefix || 'USER';
+            if(_d.username && _d.username.toLowerCase() === 'menzych') {
+                displayPrefix = 'DEVELOPER';
+            }
+            
+            if(badge) badge.innerText = displayPrefix;
+            
+            if(devTools) devTools.classList.add('hidden');
+            if(buyBtn) buyBtn.classList.remove('hidden');
+
+            switch(displayPrefix) {
+                case 'DEVELOPER':
+                    if(badge) badge.className = "px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold rounded-full border border-red-200 dark:border-red-900";
+                    if(devTools) devTools.classList.remove('hidden');
+                    if(buyBtn) buyBtn.classList.add('hidden');
+                    break;
+                case 'PREMIUM':
+                    if(badge) badge.className = "px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-full border border-purple-200 dark:border-purple-900";
+                    if(buyBtn) buyBtn.classList.add('hidden');
+                    break;
+                case 'VIP':
+                    if(badge) badge.className = "px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-900";
+                    if(buyBtn) buyBtn.classList.add('hidden');
+                    break;
+                default:
+                    if(badge) badge.className = "px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-xs font-bold rounded-full border border-slate-200 dark:border-slate-600";
+            }
+
+            if(_d.premium && displayPrefix !== 'DEVELOPER' && displayPrefix !== 'VIP') {
+                 if(buyBtn) buyBtn.classList.add('hidden');
+            }
+
+            const list = document.getElementById('transaction-list');
+            if(list) {
+                list.innerHTML = '';
+                if(!_d.transactions || _d.transactions.length === 0) {
+                    list.innerHTML = '<li class="p-8 text-center text-slate-400 text-sm">История операций пуста</li>';
+                } else {
+                    [..._d.transactions].reverse().slice(0, 10).forEach(t => {
+                        const isPos = t.amount > 0;
+                        list.innerHTML += `
+                            <li class="p-4 flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition rounded-xl">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl ${isPos ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'} flex items-center justify-center text-lg">
+                                        <i class="fas ${getIcon(t.type)}"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-700 dark:text-slate-200">${t.desc}</p>
+                                        <p class="text-[10px] text-slate-400 font-mono">${t.date}</p>
+                                    </div>
+                                </div>
+                                <span class="font-bold font-mono ${isPos ? 'text-emerald-500' : 'text-slate-800 dark:text-white'}">${isPos ? '+' : ''}${Math.abs(t.amount)}</span>
+                            </li>`;
+                    });
+                }
+            }
+        }
+
+        window.buyPremium = async () => {
+            if(_d.balance < 1000) return showToast('Недостаточно средств (1000 💎)', 'error');
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                balance: _d.balance - 1000, premium: true, prefix: 'PREMIUM',
+                transactions: arrayUnion({amount: -1000, desc: 'Покупка Premium', type: 'payment', date: new Date().toLocaleString()})
+            });
+            showToast('Premium успешно активирован!', 'success');
+        }
+
+        window.handleTransfer = async () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            const dest = document.getElementById('transfer-input').value.trim();
+            const am = parseFloat(document.getElementById('transfer-amount').value);
+            if(!dest || am <= 0) return showToast('Проверьте данные', 'error');
+            if(am > _d.balance) return showToast('Недостаточно средств', 'error');
+            
+            let targetId = dest.startsWith('@') ? 'users_' + dest.substring(1) : 'users_' + dest;
+            if(targetId === 'users_' + _d.username) return showToast('Перевод самому себе невозможен', 'error');
+            
+            try {
+                const tRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', targetId);
+                const tSnap = await getDoc(tRef);
+                if(!tSnap.exists()) return showToast('Пользователь не найден', 'error');
+                
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance - am,
+                    transactions: arrayUnion({amount: -am, desc: `Перевод: ${tSnap.data().username}`, type: 'transfer', date: new Date().toLocaleString()})
+                });
+                await updateDoc(tRef, {
+                    balance: tSnap.data().balance + am,
+                    transactions: arrayUnion({amount: am, desc: `От: ${_d.username}`, type: 'transfer', date: new Date().toLocaleString()})
+                });
+                showToast('Средства отправлены', 'success');
+                document.getElementById('transfer-input').value = '';
+                document.getElementById('transfer-amount').value = '';
+            } catch(e) { console.error(e); showToast('Ошибка транзакции', 'error'); }
+        }
+
+        window.adminManageMoney = async (action) => {
+            const isDev = _d.prefix === 'DEVELOPER' || (_d.username && _d.username.toLowerCase() === 'menzych');
+            if(!isDev) return;
+            
+            const target = document.getElementById('dev-target-user').value.trim();
+            let amount = parseFloat(document.getElementById('dev-amount').value);
+            if(!target || !amount || amount <= 0) return showToast('Введите ник и сумму', 'error');
+            
+            try {
+                const tRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + target);
+                const tSnap = await getDoc(tRef);
+                if(!tSnap.exists()) return showToast('Юзер не найден', 'error');
+                
+                let newBalance = tSnap.data().balance;
+                let desc = 'Выдача (DEV)';
+                
+                if (action === 'take') {
+                    newBalance -= amount;
+                    desc = 'Изъятие (DEV)';
+                    amount = -amount;
+                } else {
+                    newBalance += amount;
+                }
+
+                await updateDoc(tRef, {
+                    balance: newBalance,
+                    transactions: arrayUnion({amount: amount, desc: desc, type: 'bonus', date: new Date().toLocaleString()})
+                });
+                
+                const actionText = action === 'take' ? 'Изъято' : 'Выдано';
+                showToast(`${actionText} ${Math.abs(amount)} для ${target}`, 'success');
+            } catch(e) { console.error(e); showToast('Ошибка', 'error'); }
+        }
+
+        window.adminUserAction = async (action) => {
+            const isDev = _d.prefix === 'DEVELOPER' || (_d.username && _d.username.toLowerCase() === 'menzych');
+            if(!isDev) return;
+
+            const target = document.getElementById('dev-user-manage-input').value.trim();
+            if(!target) return showToast('Введите никнейм', 'error');
+
+            try {
+                const tRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + target);
+                const tSnap = await getDoc(tRef);
+                if(!tSnap.exists()) return showToast('Юзер не найден', 'error');
+
+                let updates = {};
+                let msg = '';
+
+                switch(action) {
+                    case 'ban':
+                        updates = { banned: true };
+                        msg = `Пользователь ${target} забанен`;
+                        break;
+                    case 'unban':
+                        updates = { banned: false }; // or deleteField()
+                        msg = `Пользователь ${target} разбанен`;
+                        break;
+                    case 'freeze':
+                        updates = { frozen: true };
+                        msg = `Пользователь ${target} заморожен`;
+                        break;
+                    case 'unfreeze':
+                        updates = { frozen: false };
+                        msg = `Пользователь ${target} разморожен`;
+                        break;
+                }
+
+                await updateDoc(tRef, updates);
+                showToast(msg, 'success');
+
+            } catch(e) { console.error(e); showToast('Ошибка действия', 'error'); }
+        }
+
+        window.adminChangeNick = async () => {
+             const isDev = _d.prefix === 'DEVELOPER' || (_d.username && _d.username.toLowerCase() === 'menzych');
+            if(!isDev) return;
+
+            const oldNick = document.getElementById('dev-user-manage-input').value.trim();
+            const newNick = document.getElementById('dev-new-nick').value.trim();
+
+            if(!oldNick || !newNick) return showToast('Введите старый и новый ник', 'error');
+
+            try {
+                const oldRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + oldNick);
+                const newRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + newNick);
+                
+                const oldSnap = await getDoc(oldRef);
+                if(!oldSnap.exists()) return showToast('Старый юзер не найден', 'error');
+
+                const newSnap = await getDoc(newRef);
+                if(newSnap.exists()) return showToast('Новый ник уже занят', 'error');
+
+                const userData = oldSnap.data();
+                userData.username = newNick; // Update username field
+
+                // Create new doc
+                await setDoc(newRef, userData);
+                
+                // Delete old doc
+                await deleteDoc(oldRef);
+
+                showToast(`Ник сменен: ${oldNick} -> ${newNick}`, 'success');
+            } catch(e) { console.error(e); showToast('Ошибка смены ника', 'error'); }
+        }
+
+
+        window.adminSetPrefix = async () => {
+            // FIX: Allow if prefix is DEVELOPER OR username is menzych (case-insensitive)
+            const isDev = _d.prefix === 'DEVELOPER' || (_d.username && _d.username.toLowerCase() === 'menzych');
+            if(!isDev) return;
+
+            const target = document.getElementById('dev-target-user').value.trim();
+            const prefix = document.getElementById('dev-prefix-select').value;
+            if(!target) return showToast('Введите ник', 'error');
+             try {
+                const tRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', 'users_' + target);
+                const tSnap = await getDoc(tRef);
+                if(!tSnap.exists()) return showToast('Юзер не найден', 'error');
+                await updateDoc(tRef, { prefix: prefix });
+                showToast(`Префикс ${prefix} установлен для ${target}`, 'success');
+            } catch(e) { console.error(e); showToast('Ошибка', 'error'); }
+        }
+
+        window.wipeDatabase = async () => {
+            const btn = document.getElementById('btn-wipe');
+            if(btn.innerText !== 'ПОДТВЕРДИТЬ?') {
+                const originalText = btn.innerText;
+                const originalClass = btn.className;
+                
+                btn.innerText = 'ПОДТВЕРДИТЬ?';
+                btn.className = "w-full bg-red-800 text-white py-3 rounded-xl text-xs font-bold shadow-lg shadow-red-800/20 transition duration-200 animate-pulse";
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-skull"></i> WIPE DATABASE';
+                    btn.className = "w-full bg-red-900/50 text-red-400 py-3 rounded-xl text-xs font-bold border border-red-500/30 hover:bg-red-900 hover:text-white transition";
+                }, 3000);
+                return;
+            }
+
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                const snap = await getDocs(colRef);
+                const promises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(promises);
+                showToast('База данных полностью очищена', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка очистки: ' + e.message, 'error');
+            }
+        }
+
+        window.takeLoan = async () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            const limit = 5000 + _d.balance * 0.1;
+            if(_d.debt > 0) return showToast('У вас уже есть активный кредит', 'error');
+            const am = parseFloat(document.getElementById('loan-amount').value);
+            if(!am || am <= 0) return showToast('Введите сумму', 'error');
+            if(am > limit) return showToast(`Лимит превышен (Макс: ${Math.floor(limit)})`, 'error');
+            
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance + am,
+                    debt: am,
+                    transactions: arrayUnion({amount: am, desc: 'Кредитные средства', type: 'loan', date: new Date().toLocaleString()})
+                });
+                showToast('Кредит успешно выдан', 'success');
+                document.getElementById('loan-amount').value = '';
+            } catch(e) { console.error(e); showToast('Ошибка', 'error'); }
+        }
+
+        window.setRepayAmount = (type) => {
+            if(type === 'all') document.getElementById('repay-amount').value = _d.debt;
+        }
+
+        window.repayLoan = async () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            if(_d.debt <= 0) return showToast('Задолженность отсутствует', 'success');
+            const am = parseFloat(document.getElementById('repay-amount').value);
+            if(!am || am <= 0) return showToast('Введите сумму', 'error');
+            if(am > _d.balance) return showToast('Недостаточно средств на счете', 'error');
+            
+            const newDebt = Math.max(0, _d.debt - am);
+            const paid = _d.debt - newDebt;
+            
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance - paid,
+                    debt: newDebt,
+                    transactions: arrayUnion({amount: -paid, desc: 'Погашение кредита', type: 'loan', date: new Date().toLocaleString()})
+                });
+                showToast('Платеж принят', 'success');
+                document.getElementById('repay-amount').value = '';
+            } catch(e) { console.error(e); showToast('Ошибка', 'error'); }
+        }
+
+        function checkURL() {
+            const p = new URLSearchParams(window.location.search);
+            if(p.get('merchant') && p.get('amount')) {
+                _p = { m: p.get('merchant'), a: parseFloat(p.get('amount')), i: p.get('item') };
+                document.getElementById('gateway-badge').classList.remove('hidden');
+                document.getElementById('gateway-badge').querySelector('span').innerText = `Оплата ${_p.a}`;
+            }
+        }
+
+        function initGatewayScreen() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('gateway-screen').classList.remove('hidden');
+            document.getElementById('gw-merchant').innerText = _p.m;
+            document.getElementById('gw-item').innerText = _p.i;
+            document.getElementById('gw-amount').innerText = fmt(_p.a);
+            document.getElementById('gw-balance').innerText = `Баланс: ${fmt(_d.balance)}`;
+        }
+
+        window.confirmGatewayPayment = async () => {
+            if (isPaymentProcessing) return;
+
+            if(_d.balance < _p.a) return showToast('Недостаточно средств', 'error');
+
+            const btn = document.getElementById('btn-pay-confirm');
+            const cancelBtn = document.getElementById('btn-pay-cancel');
+            isPaymentProcessing = true;
+            btn.disabled = true;
+            if(cancelBtn) cancelBtn.disabled = true;
+            const originalText = btn.innerText;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Обработка...';
+
+            try {
+                const txId = 'TXN-' + Math.random().toString(36).substr(2,9).toUpperCase();
+                const date = new Date().toLocaleString();
+
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance - _p.a,
+                    transactions: arrayUnion({amount: -_p.a, desc: `Покупка: ${_p.i} (ID: ${txId})`, type: 'payment', date: date})
+                });
+
+                // Show Receipt
+                document.getElementById('gateway-content').classList.add('hidden');
+                document.getElementById('gateway-receipt').classList.remove('hidden');
+                
+                document.getElementById('rcpt-id').innerText = txId;
+                document.getElementById('rcpt-date').innerText = date;
+                document.getElementById('rcpt-amount').innerText = fmt(_p.a);
+
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка транзакции', 'error');
+                isPaymentProcessing = false;
+                btn.disabled = false;
+                if(cancelBtn) cancelBtn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+        
+        window.closeGateway = () => {
+             _p = null;
+            isPaymentProcessing = false;
+            document.getElementById('gateway-receipt').classList.add('hidden');
+            document.getElementById('gateway-content').classList.remove('hidden'); 
+            const btn = document.getElementById('btn-pay-confirm');
+            const cancelBtn = document.getElementById('btn-pay-cancel');
+            if(btn) {
+                btn.disabled = false;
+                btn.innerText = 'Оплатить';
+            }
+            if(cancelBtn) cancelBtn.disabled = false;
+            
+            // NEW: Clear URL parameters to prevent re-triggering gateway on refresh
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            initApp();
+        }
+
+        window.cancelGatewayPayment = () => { 
+            _p = null; 
+            // NEW: Clear URL parameters
+            window.history.replaceState({}, document.title, window.location.pathname);
+            initApp(); 
+        }
+
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+        
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+        });
+        
+        initAuth();
+        initTheme();
+        checkURL();
+
+        function generateCardNumber() {
+            let n="4"; for(let i=0;i<15;i++) n+=Math.floor(Math.random()*10);
+            return n.match(/.{1,4}/g).join(' ');
+        }
+        function fmt(n) { return Math.abs(n).toLocaleString(); }
+        function getIcon(t) { return ({work:'fa-briefcase',transfer:'fa-paper-plane',loan:'fa-university',bonus:'fa-gift',payment:'fa-receipt'})[t]||'fa-wallet'; }
+        
+        window.logout = () => { _u=null; _d=null; _p=null; document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); };
+        window.showPage = (id) => {
+            document.querySelectorAll('.page-section').forEach(e=>e.classList.add('hidden'));
+            document.getElementById('page-'+id).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(b=>{
+                b.classList.remove('text-brand-600','bg-brand-50','dark:text-brand-400','dark:bg-brand-900/20', 'bg-white', 'shadow-md');
+                b.classList.add('text-slate-400');
+            });
+            
+            const activeBtn = document.getElementById('nav-'+id);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-brand-600','bg-white','dark:bg-brand-900/20','dark:text-brand-400', 'shadow-md');
+            }
+        };
+        window.toggleAuth = (m) => {
+            document.getElementById('login-form').classList.toggle('hidden', m==='register');
+            document.getElementById('register-form').classList.toggle('hidden', m==='login');
+        };
+        window.showToast = (msg, type) => {
+            const el = document.createElement('div');
+            el.className = `${type==='success'?'bg-emerald-500':'bg-red-500'} text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-slide-up font-bold text-sm backdrop-blur-md bg-opacity-90`;
+            el.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'} text-lg"></i> ${msg}`;
+            document.getElementById('toast-container').appendChild(el); setTimeout(()=>el.remove(),3000);
+        };
+        window.copyCardNum = () => { navigator.clipboard.writeText(_d.cardNumber); showToast('Номер карты скопирован','success'); };
+        
+        window.generatePayLink = () => {
+            const m = prompt("Название магазина:"); const i = prompt("Товар:"); const a = prompt("Стоимость (💎):");
+            if(m&&i&&a) prompt("Ссылка для оплаты:", `${window.location.origin}${window.location.pathname}?merchant=${encodeURIComponent(m)}&item=${encodeURIComponent(i)}&amount=${a}`);
+        }
+
+        window.checkTransactionUI = async () => {
+            const id = document.getElementById('verify-tx-id').value.trim();
+            if(!id) return;
+            const resArea = document.getElementById('verify-result');
+            resArea.classList.remove('hidden');
+            resArea.innerHTML = `<div class="text-yellow-400 flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Поиск в блокчейне...</div>`;
+            
+            const tx = _d.transactions.find(t => t.desc.includes(id));
+            if(tx) {
+                resArea.innerHTML = `<div class="text-emerald-400 font-bold flex items-center gap-2"><i class="fas fa-check-circle"></i> Найдено</div><div class="mt-1 opacity-70">${tx.desc}</div><div class="font-mono text-emerald-400">${fmt(tx.amount)} 💎</div>`;
+            } else {
+                resArea.innerHTML = `<div class="text-red-400 font-bold flex items-center gap-2"><i class="fas fa-times-circle"></i> Транзакция не найдена</div>`;
+            }
+        }
+        
+        window.openJob = (id) => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            document.getElementById('earn-menu').classList.add('hidden');
+            document.getElementById('back-to-jobs').classList.remove('hidden');
+            document.getElementById('job-'+id).classList.remove('hidden');
+        }
+
+        window.showJobsMenu = () => {
+             // Clear any active timers
+             if(currentInterval) clearInterval(currentInterval);
+             if(currentTimeout) clearTimeout(currentTimeout);
+             currentInterval = null;
+             currentTimeout = null;
+
+             // Reset Video Job State
+             isEditing = false;
+             const videoContent = document.getElementById('video-content');
+             videoContent.classList.add('hidden');
+             videoContent.classList.add('opacity-0');
+             document.getElementById('action-btn').innerText = "Новый проект";
+             document.getElementById('timeline-container').innerHTML = '';
+             document.getElementById('render-bar').style.width = '0%';
+             document.getElementById('tool-cut').disabled = true;
+             document.getElementById('tool-fx').disabled = true;
+
+             // Reset Freelance Job State
+             document.getElementById('freelance-state-working').classList.add('hidden');
+             document.getElementById('freelance-state-idle').classList.remove('hidden');
+             const freelanceBtn = document.querySelector('#freelance-state-idle button');
+             if(freelanceBtn) {
+                 freelanceBtn.disabled = false;
+                 freelanceBtn.innerHTML = '<i class="fas fa-search"></i> Найти заказ';
+             }
+             document.getElementById('freelance-progress').style.width = '0%';
+             document.getElementById('freelance-percent').innerText = '0%';
+             document.getElementById('freelance-log').innerHTML = '<div class="opacity-50">> System initialized...</div>';
+            
+             // Reset Mining State
+             miningProgress = 0;
+             const miningBar = document.getElementById('mining-progress');
+             if(miningBar) miningBar.style.width = '0%';
+             const miningStats = document.getElementById('mining-stats');
+             if(miningStats) miningStats.innerText = '0/100';
+
+            document.getElementById('earn-menu').classList.remove('hidden');
+            document.getElementById('back-to-jobs').classList.add('hidden');
+            ['video', 'mining', 'freelance'].forEach(id => document.getElementById('job-'+id).classList.add('hidden'));
+        }
+
+        let isEditing = false;
+        window.startEditingProject = () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            if(isEditing) return; isEditing = true;
+            document.getElementById('action-btn').innerText = "Рендеринг...";
+            document.getElementById('video-content').classList.remove('hidden');
+            setTimeout(() => document.getElementById('video-content').classList.remove('opacity-0'), 100);
+            document.getElementById('tool-cut').disabled = false;
+        }
+        window.editorAction = (t) => {
+            if(t==='cut') {
+                const tl = document.getElementById('timeline-container');
+                tl.innerHTML += '<div class="h-14 w-12 bg-blue-500 rounded-lg border-2 border-blue-400 shadow-lg"></div>';
+                if(tl.children.length >= 4) { document.getElementById('tool-cut').disabled=true; document.getElementById('tool-fx').disabled=false; }
+            } else {
+                document.getElementById('tool-fx').disabled=true;
+                let w=0; const b=document.getElementById('render-bar');
+                currentInterval = setInterval(async ()=>{
+                    w+=10; b.style.width=w+'%';
+                    if(w>=100){
+                        clearInterval(currentInterval);
+                        currentInterval = null;
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                            balance: _d.balance + 50,
+                            transactions: arrayUnion({amount: 50, desc: 'Заказ (Монтаж)', type: 'work', date: new Date().toLocaleString()})
+                        });
+                        showToast('Проект сдан! +50 💎', 'success');
+                        setTimeout(()=>{
+                            isEditing=false;
+                            const videoContent = document.getElementById('video-content');
+                            videoContent.classList.add('hidden');
+                            videoContent.classList.add('opacity-0');
+                            document.getElementById('action-btn').innerText = "Новый проект";
+                            document.getElementById('timeline-container').innerHTML='';
+                            b.style.width='0%';
+                        },1000);
+                    }
+                },200);
+            }
+        }
+
+        let miningProgress = 0;
+        window.mineClick = async () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            const rock = document.getElementById('mining-rock');
+            rock.style.transform = 'scale(0.95) rotate(5deg)';
+            setTimeout(() => rock.style.transform = 'scale(1) rotate(0deg)', 50);
+            
+            miningProgress += 10;
+            if(miningProgress > 100) miningProgress = 100;
+            
+            document.getElementById('mining-progress').style.width = miningProgress + '%';
+            document.getElementById('mining-stats').innerText = miningProgress + '/100';
+
+            if(miningProgress >= 100) {
+                miningProgress = 0;
+                document.getElementById('mining-progress').style.width = '0%';
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                    balance: _d.balance + 10,
+                    transactions: arrayUnion({amount: 10, desc: 'Майнинг (Блок)', type: 'work', date: new Date().toLocaleString()})
+                });
+                showToast('Блок добыт! +10 💎', 'success');
+            }
+        }
+
+        window.startFreelanceSearch = () => {
+            if(_d.frozen) return showToast('Аккаунт заморожен', 'error');
+            const btn = document.querySelector('#freelance-state-idle button');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-satellite-dish fa-spin"></i> Поиск заказов...';
+            
+            currentTimeout = setTimeout(() => {
+                document.getElementById('freelance-state-idle').classList.add('hidden');
+                document.getElementById('freelance-state-working').classList.remove('hidden');
+                startFreelanceTask();
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-search"></i> Найти заказ';
+            }, 2000);
+        }
+
+        function startFreelanceTask() {
+            const logs = document.getElementById('freelance-log');
+            const bar = document.getElementById('freelance-progress');
+            const percent = document.getElementById('freelance-percent');
+            logs.innerHTML = '<div class="opacity-50">> Connected to git...</div>';
+            bar.style.width = '0%';
+            
+            const tasks = [
+                "Анализ требований...", "Настройка окружения...", "Написание кода...", "Рефакторинг...", "Запуск тестов...", "Деплой на прод..."
+            ];
+            let step = 0;
+            
+            currentInterval = setInterval(async () => {
+                if(step < tasks.length) {
+                    logs.innerHTML += `<div>> ${tasks[step]}</div>`;
+                    logs.scrollTop = logs.scrollHeight;
+                    step++;
+                    const p = Math.floor((step / tasks.length) * 100);
+                    bar.style.width = p + '%';
+                    percent.innerText = p + '%';
+                } else {
+                    clearInterval(currentInterval);
+                    currentInterval = null;
+                    const reward = Math.floor(Math.random() * (100 - 20) + 20);
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', _u), {
+                        balance: _d.balance + reward,
+                        transactions: arrayUnion({amount: reward, desc: 'Фриланс (Заказ)', type: 'work', date: new Date().toLocaleString()})
+                    });
+                    showToast(`Заказ закрыт! +${reward} 💎`, 'success');
+                    setTimeout(() => {
+                        document.getElementById('freelance-state-working').classList.add('hidden');
+                        document.getElementById('freelance-state-idle').classList.remove('hidden');
+                    }, 1000);
+                }
+            }, 800);
+        }
+
+    </script>
+</body>
+</html>
