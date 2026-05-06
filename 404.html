@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Страница не найдена | menzych</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { light: '#6750A4', dark: '#D0BCFF' },
+                        onPrimary: { light: '#FFFFFF', dark: '#381E72' },
+                        primaryContainer: { light: '#EADDFF', dark: '#4F378B' },
+                        onPrimaryContainer: { light: '#21005D', dark: '#EADDFF' },
+                        surface: { light: '#FEF7FF', dark: '#141218' },
+                        onSurface: { light: '#1D1B20', dark: '#E6E0E9' },
+                        surfaceVariant: { light: '#E7E0EC', dark: '#49454F' },
+                        onSurfaceVariant: { light: '#49454F', dark: '#CAC4D0' },
+                        outline: { light: '#79747E', dark: '#938F99' }
+                    },
+                    fontFamily: {
+                        roboto: ['Roboto', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'md1': '0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15)',
+                        'md2': '0 1px 2px 0 rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15)',
+                        'md3': '0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .bg-gradient-radial {
+            background: radial-gradient(circle at top right, rgba(103, 80, 164, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(208, 188, 255, 0.15), transparent 40%);
+        }
+
+        .dark .bg-gradient-radial {
+            background: radial-gradient(circle at top right, rgba(208, 188, 255, 0.1), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(103, 80, 164, 0.15), transparent 40%);
+        }
+
+        .material-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .material-btn:active {
+            transform: scale(0.96);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        .ripple-dark {
+            background-color: rgba(103, 80, 164, 0.2);
+        }
+
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+    </style>
+</head>
+
+<body class="bg-surface-light text-onSurface-light dark:bg-surface-dark dark:text-onSurface-dark min-h-screen flex flex-col bg-gradient-radial">
+
+    <header class="fixed top-0 w-full z-50 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-xl shadow-sm transition-colors duration-300 border-b border-outline-light/10 dark:border-outline-dark/10">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-bold text-primary-light dark:text-primary-dark tracking-wide hover:opacity-80 transition-opacity">
+                menzych
+            </a>
+            
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-surfaceVariant-light dark:hover:bg-surfaceVariant-dark transition-colors text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark flex items-center justify-center">
+                <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 pt-24 pb-12 w-full">
+        
+        <h1 class="text-[10rem] md:text-[12rem] font-bold leading-none mb-4 text-primary-light dark:text-primary-dark tracking-tighter opacity-20 select-none">
+            404
+        </h1>
+        
+        <div class="mb-8 transform hover:scale-110 transition-all duration-300">
+            <span class="material-symbols-outlined text-9xl text-primary-light dark:text-primary-dark">visibility_off</span>
+        </div>
+        
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 text-onSurface-light dark:text-onSurface-dark">
+            Страница не найдена
+        </h2>
+        
+        <p class="text-lg md:text-xl text-onSurfaceVariant-light/80 dark:text-onSurfaceVariant-dark/80 mb-12 max-w-md leading-relaxed font-medium">
+            Я не могу найти страницу, которую вы ищете. Возможно, она была удалена или перемещена.
+        </p>
+        
+        <a href="index.html" class="material-btn bg-primary-light dark:bg-primary-dark text-onPrimary-light dark:text-onPrimary-dark px-10 py-4 rounded-full font-medium shadow-md1 hover:shadow-md2 flex items-center gap-3 group text-lg">
+            <span class="material-symbols-outlined text-[24px] group-hover:-translate-x-1 transition-transform duration-300">arrow_back</span>
+            Вернуться на главную
+        </a>
+        
+    </main>
+
+    <footer class="mt-auto py-8 text-center border-t border-outline-light/10 dark:border-outline-dark/10 bg-surface-light/50 dark:bg-surface-dark/50 backdrop-blur-sm">
+        <p class="text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark font-medium flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">&copy;</span> 2026 menzych
+        </p>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+        let isDark = false;
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            isDark = true;
+            html.classList.add('dark');
+            themeIcon.textContent = 'light_mode';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            if (isDark) {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                themeIcon.textContent = 'light_mode';
+            } else {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                themeIcon.textContent = 'dark_mode';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.material-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const circle = document.createElement('span');
+                    circle.classList.add('ripple');
+                    
+                    circle.style.left = x + 'px';
+                    circle.style.top = y + 'px';
+                    
+                    this.appendChild(circle);
+                    
+                    setTimeout(() => {
+                        circle.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>menzych</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="tailwind-config.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-surface-light text-onSurface-light dark:bg-surface-dark dark:text-onSurface-dark min-h-screen flex flex-col bg-gradient-radial">
+
+    <header class="fixed top-0 w-full z-50 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-xl shadow-sm transition-colors duration-300 border-b border-outline-light/10 dark:border-outline-dark/10">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="text-2xl font-bold text-primary-light dark:text-primary-dark tracking-wide cursor-pointer" onclick="switchView('home')">
+                menzych
+            </div>
+            
+            <nav class="flex gap-6 md:gap-8">
+                <button onclick="switchView('home')" class="nav-link active text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark hover:text-primary-light dark:hover:text-primary-dark font-medium transition-colors" data-view="home">
+                    Главная
+                </button>
+                <button onclick="switchView('projects')" class="nav-link text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark hover:text-primary-light dark:hover:text-primary-dark font-medium transition-colors" data-view="projects">
+                    Проекты
+                </button>
+            </nav>
+            
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-surfaceVariant-light dark:hover:bg-surfaceVariant-dark transition-colors text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark flex items-center justify-center">
+                <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow pt-24 pb-12 px-4 max-w-6xl mx-auto w-full">
+
+        <div id="home-view" class="view-section active flex-col gap-24">
+            
+            <section class="flex flex-col items-center justify-center min-h-[60vh] text-center relative">
+                <img src="assets\img\profile\photo_2026-01-16_18-32-17.jpg" alt="Аватар" class="w-36 h-36 mb-8 rounded-[2rem] object-cover shadow-md2 rotate-3 hover:rotate-0 transition-transform duration-300 bg-surfaceVariant-light dark:bg-surfaceVariant-dark">
+                
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-onSurface-light dark:text-onSurface-dark tracking-tight">
+                    Хаюшки, я <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-light to-blue-500 dark:from-primary-dark dark:to-blue-400">menzych!</span>
+                </h1>
+
+                <p class="text-xl md:text-2xl mb-10 text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark max-w-2xl leading-relaxed font-light">
+                    Чилловый парень который любит писать код, и делать всякую ненужную фигню.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="switchView('projects')" class="material-btn bg-primary-light dark:bg-primary-dark text-onPrimary-light dark:text-onPrimary-dark px-8 py-4 rounded-full font-medium shadow-md1 hover:shadow-md2 flex items-center gap-2">
+                        Мои проекты
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    </button>
+                    <a href="https://github.com/menzych" target="_blank" class="material-btn bg-surfaceVariant-light dark:bg-surfaceVariant-dark text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark px-8 py-4 rounded-full font-medium hover:bg-outline-light/20 dark:hover:bg-outline-dark/20 flex items-center gap-2">
+                        GitHub
+                        <span class="material-symbols-outlined text-[20px]">code</span>
+                    </a>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold mb-8 text-onSurface-light dark:text-onSurface-dark flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-primary-light dark:text-primary-dark text-4xl">info</span> Обо мне
+                </h2>
+                
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-surface-light dark:bg-surface-dark p-8 md:p-12 rounded-[2.5rem] shadow-md1 hover:shadow-md2 transition-shadow border border-outline-light/10 dark:border-outline-dark/10 relative overflow-hidden flex flex-col items-center text-center">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary-light/5 to-transparent dark:from-primary-dark/5 rounded-bl-full pointer-events-none"></div>
+                        <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tl from-primary-light/5 to-transparent dark:from-primary-dark/5 rounded-tr-full pointer-events-none"></div>
+                        
+                        <span class="material-symbols-outlined text-5xl text-primary-light/20 dark:text-primary-dark/20 mb-6">format_quote</span>
+                        
+                        <p class="text-xl md:text-2xl leading-relaxed text-onSurface-light dark:text-onSurface-dark font-medium relative z-10 mb-8 max-w-3xl">
+                            Чилловые парни, они как ветер. <br> Бывают приятными и весёлыми, а бывают...
+                        </p>
+                        
+                        <p class="text-lg text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark relative z-10 leading-relaxed max-w-2xl">
+                            Я как раз один из таких, бываю весёлым а иногда позлюсь на кого-то. <br> Вот именно в таких ситуациях меня и спасает программирование, оно меня успокаивает.  Монотонно верстать сайты вечерком. А так программированием я заитересовался с 9 лет. Сначало программировал на Scratch, потом на Python, потом на HTML. И вот дорос до этого уровня!
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold mb-8 mt-12 text-onSurface-light dark:text-onSurface-dark flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-primary-light dark:text-primary-dark text-4xl">build</span> Навыки
+                </h2>
+                
+                <div class="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">html</span> HTML5 & CSS3
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">javascript</span> JavaScript
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">dns</span> Go (Golang)
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">local_cafe</span> Java
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">desktop_windows</span> Electron
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-surface-light dark:bg-surface-dark border border-outline-light/10 dark:border-outline-dark/10 text-onSurface-light dark:text-onSurface-dark font-medium flex items-center gap-3 hover:shadow-md1 transition-shadow cursor-default">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">terminal</span> Git & GitHub
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="projects-view" class="view-section flex-col gap-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-onSurface-light dark:text-onSurface-dark">
+                    Мои работы
+                </h1>
+                <p class="text-xl text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark">
+                    Сборник моих сайтов и программ.
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full md:w-96">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark">search</span>
+                    <input type="text" id="searchInput" placeholder="Поиск проектов..." class="w-full bg-surface-light dark:bg-surface-dark border border-outline-light/20 dark:border-outline-dark/20 rounded-full py-3 pl-12 pr-4 text-onSurface-light dark:text-onSurface-dark focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors shadow-sm">
+                </div>
+                <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar" id="filterContainer">
+                </div>
+            </div>
+
+            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            </div>
+        </div>
+
+    </main>
+
+    <div id="projectModal" class="fixed inset-0 z-[100] bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-400 flex items-center justify-center p-4 md:p-8">
+        <div class="bg-surface-light dark:bg-surface-dark w-full max-w-4xl max-h-full rounded-[2.5rem] shadow-md3 border border-outline-light/20 dark:border-outline-dark/20 flex flex-col scale-95 translate-y-8 transition-all duration-500 overflow-hidden" id="projectModalContent">
+            
+            <div class="relative p-8 md:p-10 pb-6 overflow-hidden shrink-0">
+                <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-primary-light/20 to-transparent dark:from-primary-dark/20 rounded-bl-[100%] pointer-events-none"></div>
+                
+                <div class="flex justify-between items-start relative z-10">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="w-16 h-16 rounded-2xl bg-primaryContainer-light dark:bg-primaryContainer-dark flex items-center justify-center shadow-sm">
+                            <span id="modalBannerIcon" class="material-symbols-outlined text-4xl text-primary-light dark:text-primary-dark">code</span>
+                        </div>
+                        <div id="modalStatus"></div>
+                    </div>
+                    <button onclick="closeModal()" class="w-12 h-12 rounded-full bg-surfaceVariant-light/50 dark:bg-surfaceVariant-dark/50 hover:bg-surfaceVariant-light dark:hover:bg-surfaceVariant-dark flex items-center justify-center text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark transition-colors shrink-0 backdrop-blur-sm shadow-sm hover:shadow-md1">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+                
+                <h2 id="modalTitle" class="text-3xl md:text-5xl font-bold text-onSurface-light dark:text-onSurface-dark relative z-10 tracking-tight"></h2>
+            </div>
+            
+            <div class="p-8 md:p-10 pt-2 overflow-y-auto hide-scrollbar flex-grow relative z-10">
+                <p id="modalDescription" class="text-xl text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark mb-10 leading-loose whitespace-pre-line"></p>
+                
+                <div id="modalActionButtons" class="flex flex-wrap gap-4 mb-10 border-b border-outline-light/10 dark:border-outline-dark/10 pb-10">
+                </div>
+
+                <div id="modalImagesWrapper" class="hidden">
+                    <h4 class="text-xl font-bold mb-6 text-onSurface-light dark:text-onSurface-dark flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary-light dark:text-primary-dark">photo_library</span> Скриншоты
+                    </h4>
+                    <div id="modalImages" class="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="mt-auto py-8 text-center border-t border-outline-light/10 dark:border-outline-dark/10 bg-surface-light/50 dark:bg-surface-dark/50 backdrop-blur-sm">
+        <p class="text-onSurfaceVariant-light dark:text-onSurfaceVariant-dark font-medium flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">&copy;</span> 2026 menzych
+        </p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
